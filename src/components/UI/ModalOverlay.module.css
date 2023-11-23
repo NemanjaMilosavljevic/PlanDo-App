@@ -1,0 +1,216 @@
+.backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: var(--backdrop-color);
+  z-index: 15;
+}
+
+.modal-container {
+  position: fixed;
+  top: 40px;
+  left: 200px;
+  bottom: 10px;
+  margin: auto;
+  width: 70%;
+  border-radius: 5px;
+  border: var(--border-modal-color);
+  background-color: var(--background-color-kanban-item);
+  box-shadow: var(--modal-shadow);
+  z-index: 20;
+  overflow-y: auto;
+}
+
+.modal-container::-webkit-scrollbar {
+  width: 0.75vw;
+}
+
+.modal-container::-webkit-scrollbar-thumb {
+  background-color: var(--inner-scroll-color);
+  border: 0.2vw solid transparent;
+  background-clip: content-box;
+  border-radius: 20px;
+}
+
+.modal-container::-webkit-scrollbar-track {
+  background-color: var(--outer-scroll-color);
+  margin-block: 2.5rem;
+  border-radius: 20px;
+}
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  margin: auto;
+  padding: 1.5rem;
+  font-family: inherit;
+  width: 75%;
+}
+
+.modal-form label {
+  color: var(--label-modal-color);
+  font-size: 0.8rem;
+}
+
+.visible-id {
+  height: fit-content;
+  font-weight: bolder;
+  padding: 5px;
+  text-align: center;
+  background-color: var(--background-kanban-id);
+  color: var(--modal-color);
+  font-size: 0.8rem;
+  width: 12%;
+}
+
+.modal-heading {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+#modal-title {
+  border: 1px solid var(--border);
+  font-weight: bold;
+  font-size: 1.5rem;
+  padding: 5px;
+}
+
+:is(#modal-title, #modal-select-field, #textarea, #modal-due-date):focus {
+  border: var(--modal-input-border);
+  outline: none;
+}
+
+#textarea {
+  color: var(--input-color);
+  border: var(--modal-input-border);
+  margin-top: 1rem;
+}
+
+.create-date {
+  margin-bottom: 0.75rem;
+}
+
+.modal-date {
+  width: 25%;
+  border: var(--modal-input-border);
+  font-family: inherit;
+  background: url(../../../public/Images/calendar-icon.svg);
+  background-size: 15px;
+  background-repeat: no-repeat;
+  background-position: right;
+  padding: 5px;
+}
+
+.orange-icon {
+  width: 25%;
+  border: var(--modal-input-border);
+  font-family: inherit;
+  background: url(../../../public/Images/calendar-icon-orange.svg);
+  background-size: 15px;
+  background-repeat: no-repeat;
+  background-position: right;
+  padding: 5px;
+}
+
+.calendar input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0;
+}
+
+.priority input[type="checkbox"] {
+  margin: 0 0 20px 0;
+  cursor: pointer;
+}
+
+.priority #checkbox {
+  width: 30%;
+  cursor: pointer;
+}
+
+#modal-select-field {
+  padding: 5px;
+  margin-left: 1rem;
+  width: 18%;
+  font-size: 1rem;
+  font-weight: bolder;
+}
+
+.inline-text {
+  font-size: 0.8rem;
+  color: var(--label-modal-color);
+}
+
+.status {
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1rem;
+}
+
+.cancel-btn {
+  position: absolute;
+  background: transparent url(../../../public/Images/xmark.svg);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  width: 35px;
+  height: 35px;
+  top: -20px;
+  right: 5px;
+  border-radius: 50%;
+}
+
+.cancel-btn:hover {
+  background-color: var(--cancel-button-color-hover);
+}
+
+.update-btn {
+  margin: 1.5rem 1.5rem 2rem 0;
+}
+
+.delete-btn {
+  background-color: var(--delete-button-color);
+}
+
+.delete-btn:hover {
+  background-color: var(--delete-button-color-hover);
+}
+
+.animationEnter {
+  animation: showModal 600ms ease-in forwards;
+}
+
+.animationExit {
+  animation: hideModal 600ms ease-out forwards;
+}
+
+@keyframes showModal {
+  0% {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(10%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0%);
+  }
+}
+
+@keyframes hideModal {
+  0% {
+    opacity: 1;
+    transform: translateY(0%);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(10%);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+}

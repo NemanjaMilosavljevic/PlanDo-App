@@ -1,0 +1,22 @@
+.label {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 400;
+  padding-bottom: 4px;
+  color: var(--label-color);
+}
+
+.select {
+  width: 100%;
+  padding: 10px;
+  border: 0.5px solid var(--border);
+  background-color: var(--input-background-color);
+  color: var(--input-color);
+  font-family: inherit;
+  font-size: 0.85rem;
+}
+
+.select:focus {
+  outline: 2px solid var(--outline);
+  border: 0.5px solid var(--border-focus);
+}

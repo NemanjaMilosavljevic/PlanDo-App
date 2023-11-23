@@ -1,25 +1,103 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useContext } from "react";
+import ReactDOM from "react-dom";
+import Navbar from "./components/Layout/Navbar";
+import TaskForm from "./pages/TaskForm";
+import Header from "./components/Layout/Header";
+import Ilustration from "./components/Ilustrations/Ilustration";
+import Kanban from "./pages/Kanban";
+import IlustrationBackground from "./pages/IlustrationBackground";
+import AnalyticsCard from "./pages/AnalitycsCard";
+import ThemeModeContext from "./contextAPI/theme-mode-context";
+import NavbarContext from "./contextAPI/navbar-context";
+import PageNotFound from "./pages/PageNotFound";
+import Login from "./pages/Login";
+import styles from "./components/Ilustrations/Ilustration.module.css";
+import TasksContext from "./contextAPI/tasks-context";
+import { Route, Routes, Navigate, NavLink } from "react-router-dom";
+import AuthContext from "./contextAPI/auth-context";
+import ChangePassword from "./pages/ChangePassword";
 
-function App() {
+const App = () => {
+  const ctxNavbar = useContext(NavbarContext);
+  const ctxTheme = useContext(ThemeModeContext);
+  const ctxAuth = useContext(AuthContext);
+  const ctxTasks = useContext(TasksContext);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
+    <>
+      {ctxAuth.isLoggedIn && ctxNavbar.navbarAndHeaderIsShown && (
+        <Header onClick={ctxNavbar.toggleNavbar} />
+      )}
+      {ctxAuth.isLoggedIn && ctxNavbar.navbarAndHeaderIsShown && (
+        <Navbar
+          onMouseEnter={ctxNavbar.showNavbar}
+          onMouseLeave={ctxNavbar.hideNavbar}
+        />
+      )}
+
+      <Routes>
+        {ctxAuth.isLoggedIn && (
+          <Route
+            element={ReactDOM.createPortal(
+              <IlustrationBackground />,
+              document.getElementById("ilustration-bg")
+            )}
+            path="/home"
+          ></Route>
+        )}
+        {ctxAuth.isLoggedIn && (
+          <Route element={<TaskForm />} path="/create-task"></Route>
+        )}
+        {ctxAuth.isLoggedIn && (
+          <Route element={<Kanban />} path="/kanban"></Route>
+        )}
+        {ctxAuth.isLoggedIn && (
+          <Route element={<AnalyticsCard />} path="/analitics"></Route>
+        )}
+        {!ctxAuth.isLoggedIn ? (
+          <Route
+            path="/"
+            element={<Navigate to="/sign-in" />}
+            replace={true}
+          ></Route>
+        ) : (
+          <Route
+            path="/"
+            element={<Navigate to="/home" />}
+            replace={true}
+          ></Route>
+        )}
+        {ctxAuth.isLoggedIn && (
+          <Route path="/update-password" element={<ChangePassword />}></Route>
+        )}
+        <Route path="/sign-in" element={<Login />}></Route>
+        {ctxAuth.isLoggedIn ? (
+          <Route path="*" element={<PageNotFound />}></Route>
+        ) : (
+          <Route
+            path="*"
+            element={<Navigate to="/sign-in" />}
+            replace={true}
+          ></Route>
+        )}
+      </Routes>
+
+      {!ctxTasks.isLoading && (
+        <NavLink
+          to="/create-task"
+          className={(dataLink) =>
+            dataLink.isActive ? "show-ilustration" : "hide-ilustration"
+          }
         >
-          Learn React
-        </a>
-      </header>
-    </div>
+          <Ilustration
+            className={`${styles["ilustration-newtask"]} ${
+              ctxTheme.isToggle === true ? styles["dark"] : ""
+            }`}
+          />
+        </NavLink>
+      )}
+    </>
   );
-}
+};
 
 export default App;

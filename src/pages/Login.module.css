@@ -1,0 +1,32 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 30%;
+  margin: auto;
+}
+
+.heading {
+  color: var(--color-main-heading);
+  font-size: 1.25rem;
+  text-align: center;
+  margin-top: 0;
+}
+
+.placeholder {
+  color: var(--placeholder);
+}
+
+.button {
+  align-self: center;
+}
+
+.auth-mode-changer {
+  font-size: 1rem;
+  color: var(--color-sub-heading);
+  text-align: center;
+}
+
+.auth-mode-changer:hover {
+  cursor: pointer;
+  text-decoration: underline;
+}

@@ -1,0 +1,17 @@
+.ilustration-page-not-found {
+  height: calc(80vh - 100px);
+  width: 47%;
+  background-image: url(../../../public/Images/page_not_found_illustration.svg);
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+}
+
+.dark {
+  height: calc(80vh - 100px);
+  width: 47%;
+  background-image: url(../../../public/Images/page_not_found_illustration_dark.svg);
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+}

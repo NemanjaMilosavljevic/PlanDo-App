@@ -1,0 +1,43 @@
+.label {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 400;
+  padding-bottom: 4px;
+  color: var(--label-color);
+}
+
+.input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 1rem;
+  border: 0.5px solid var(--border);
+  background-color: var(--input-background-color);
+  color: var(--input-color);
+  font-family: inherit;
+}
+
+input[type="date"] {
+  width: 50%;
+  font-family: inherit;
+}
+
+input[type="checkbox"] {
+  margin: 0;
+  padding: 0;
+  width: 20px;
+  accent-color: var(--checkbox-color);
+}
+
+input[type="checkbox"]:focus {
+  outline: none;
+}
+
+.input::placeholder {
+  color: var(--placeholder);
+  font-family: inherit;
+}
+
+.input:focus {
+  outline: 2px solid var(--outline);
+  border: 0.5px solid var(--border-focus);
+}

@@ -1,0 +1,21 @@
+.ilustration-newtask {
+  height: calc(100vh - 100px);
+  width: 47%;
+  float: right;
+  margin-top: 50px;
+  background-image: url(../../../public/Images/undraw_blank_canvas_re_2hwy.svg);
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+}
+
+.dark {
+  height: calc(100vh - 100px);
+  width: 47%;
+  float: right;
+  margin-top: 50px;
+  background-image: url(../../../public/Images/undraw_blank_canvas_re_2hwy-dark.svg);
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+}

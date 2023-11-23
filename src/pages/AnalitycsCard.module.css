@@ -1,0 +1,43 @@
+.card-analitycs {
+  display: flex;
+  gap: 5rem;
+  margin-left: 220px;
+  margin-top: 50px;
+  padding: 10px;
+  height: calc(100vh - 50px);
+  overflow-y: hidden;
+}
+
+.inner-container {
+  display: flex;
+  flex-direction: column;
+  width: 40%;
+  overflow-y: auto;
+}
+
+.inner-container::-webkit-scrollbar {
+  width: 0.75vw;
+  height: 1vh;
+}
+
+.inner-container::-webkit-scrollbar-thumb {
+  background-color: var(--inner-scroll-color);
+  border: 0.15vw solid transparent;
+  background-clip: content-box;
+  border-radius: 20px;
+}
+
+.inner-container::-webkit-scrollbar-track {
+  background-color: var(--outer-scroll-color);
+  margin-top: 7.5rem;
+  border-radius: 20px;
+}
+
+.card-analitycs h1 {
+  margin: 0;
+}
+
+.card-analitycs h3 {
+  color: var(--color-sub-heading);
+  margin-top: 8px;
+}

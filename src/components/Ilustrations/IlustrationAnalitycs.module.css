@@ -1,0 +1,17 @@
+.ilustration-analitycs {
+  background-image: url(../../../public/Images/undraw_control_panel_re_y3ar.svg);
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+  height: 100vh;
+  width: 50%;
+}
+
+.dark {
+  background-image: url(../../../public/Images/undraw_control_panel_re_y3ar-dark.svg);
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
+  height: 100vh;
+  width: 50%;
+}

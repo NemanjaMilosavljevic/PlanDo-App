@@ -1,0 +1,56 @@
+.card {
+  border-radius: 5px;
+  height: auto;
+  max-width: 450px;
+  margin-bottom: 20px;
+  background-color: var(--background-color-kanban-item);
+  box-shadow: var(--kanban-item-shadow);
+  padding: 10px;
+  cursor: pointer;
+  border: var(--kanban-item-border);
+}
+
+.drag-card {
+  border-radius: 5px;
+  height: auto;
+  max-width: 450px;
+  margin-bottom: 20px;
+  background-color: var(--background-color-kanban-item);
+  box-shadow: var(--kanban-item-shadow);
+  padding: 10px;
+  cursor: pointer;
+  border: var(--kanban-item-border);
+  opacity: 0.4;
+}
+
+.card:hover {
+  background-color: var(--kanban-item-hover);
+}
+
+.title-heading {
+  overflow-wrap: break-word;
+  border-bottom: var(--heading-kanban-item-bottom-border);
+  padding-bottom: 5px;
+  color: var(--kanban-item-title-color);
+}
+
+.id-item {
+  margin-top: 10px;
+  padding: 2px 2px 2px 0px;
+  display: inline-block;
+  font-size: 10px;
+  background-color: var(--background-kanban-id);
+}
+
+.due-item {
+  font-size: 12px;
+  padding: 4px 0px;
+  color: var(--kanban-item-duedate-color);
+}
+
+.flag {
+  float: right;
+  padding-top: 8px;
+  padding-right: 10px;
+  font-size: 15px;
+}

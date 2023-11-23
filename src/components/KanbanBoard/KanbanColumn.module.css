@@ -1,0 +1,14 @@
+.kanban-column {
+  display: flex;
+  flex-direction: column;
+  width: 34%;
+  padding-left: 20px;
+  padding-right: 20px;
+  border: 0.5px solid var(--border);
+  background-color: var(--background-kanban-column-color);
+}
+
+.heading {
+  color: var(--heading-kanban-column-color);
+  margin-left: 1rem;
+}

@@ -1,0 +1,36 @@
+.filter-wrapper {
+  display: flex;
+  justify-content: center;
+  border: 1px solid var(--border);
+  background-color: var(--background-color-kanban-item);
+  border-radius: 16px;
+  height: 70px;
+  width: fit-content;
+  margin: 30px 0 10px 0;
+  padding: 10px 15px 10px 10px;
+}
+#label {
+  margin-top: 10px;
+  color: var(--checkbox-color);
+  font-size: 0.75rem;
+  font-family: inherit;
+  text-wrap: nowrap;
+}
+
+.filter-wrapper .filter-select,
+.filter-wrapper .filter-select-second {
+  height: 22px;
+  width: auto;
+  margin-top: 8px;
+  margin-left: 8px;
+  padding: 0 2px;
+  font-size: 0.8rem;
+}
+
+:is(
+    .filter-wrapper .filter-select,
+    .filter-wrapper .filter-select-second
+  ):focus {
+  outline: none;
+  border: 0.5px solid var(--border);
+}
