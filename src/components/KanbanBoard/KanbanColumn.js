@@ -6,14 +6,14 @@ import {
   faSquareCheck,
 } from "@fortawesome/free-regular-svg-icons";
 import TasksContext from "../../contextAPI/tasks-context";
-import ThemeModeContext from "../../contextAPI/theme-mode-context";
 import React, { useContext } from "react";
 import styles from "./KanbanColumn.module.css";
 import { useDroppable } from "@dnd-kit/core";
+import { useSelector } from "react-redux";
 
 const KanbanColumn = (props) => {
   const ctxTasks = useContext(TasksContext);
-  const ctxTheme = useContext(ThemeModeContext);
+  const isToggle = useSelector((state) => state.theme.switchIsToggle);
 
   const { setNodeRef, listeners, attributes } = useDroppable({
     id: props.columnId,
@@ -34,7 +34,7 @@ const KanbanColumn = (props) => {
           <FontAwesomeIcon
             icon={faRectangleList}
             style={{
-              color: `${ctxTheme.isToggle === true ? "#c78437" : "#000"}`,
+              color: `${isToggle === true ? "#c78437" : "#000"}`,
               padding: " 0px 20px 0px 10px",
             }}
           />
@@ -42,7 +42,7 @@ const KanbanColumn = (props) => {
           <FontAwesomeIcon
             icon={faListCheck}
             style={{
-              color: `${ctxTheme.isToggle === true ? "#c78437" : "#000"}`,
+              color: `${isToggle === true ? "#c78437" : "#000"}`,
               padding: " 0px 20px 0px 10px",
             }}
           />
@@ -50,7 +50,7 @@ const KanbanColumn = (props) => {
           <FontAwesomeIcon
             icon={faSquareCheck}
             style={{
-              color: `${ctxTheme.isToggle === true ? "#c78437" : "#000"}`,
+              color: `${isToggle === true ? "#c78437" : "#000"}`,
               padding: " 0px 20px 0px 10px",
             }}
           />

@@ -3,13 +3,13 @@ import Button from "../components/UI/Button";
 import styles from "./PageNotFound.module.css";
 import { useNavigate } from "react-router-dom";
 import NavbarContext from "../contextAPI/navbar-context";
-import ThemeModeContext from "../contextAPI/theme-mode-context";
 import Ilustration from "../components/Ilustrations/Ilustration";
 import classes from "../components/Ilustrations/IlustrationPageNotFound.module.css";
+import { useSelector } from "react-redux";
 
 const PageNotFound = () => {
+  const isToggle = useSelector((state) => state.theme.switchIsToggle);
   const ctxNavbar = useContext(NavbarContext);
-  const ctxTheme = useContext(ThemeModeContext);
   const navigate = useNavigate();
 
   const { hideNabvarAndHeaderHandler, showNabvarAndHeaderHandler } = ctxNavbar;
@@ -28,7 +28,7 @@ const PageNotFound = () => {
       <p className={styles.text}>Page Not Found!</p>
       <Ilustration
         className={`${classes["ilustration-page-not-found"]}  ${
-          ctxTheme.isToggle === true ? classes["dark"] : ""
+          isToggle === true ? classes["dark"] : ""
         }`}
       ></Ilustration>
       <Button

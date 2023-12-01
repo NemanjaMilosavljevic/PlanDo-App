@@ -4,17 +4,17 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare } from "@fortawesome/free-regular-svg-icons";
 import { faCalendarDays } from "@fortawesome/free-solid-svg-icons";
 import TasksContext from "../../contextAPI/tasks-context";
-import ThemeModeContext from "../../contextAPI/theme-mode-context";
 import Button from "./Button";
 import Input from "./Input";
 import DropdownInput from "./DropdownInput";
 import Textarea from "./Textarea";
+import { useSelector } from "react-redux";
 
 import CSSTransition from "react-transition-group/CSSTransition";
 
 const ModalOverlay = (props) => {
   const ctxTasks = useContext(TasksContext);
-  const ctxTheme = useContext(ThemeModeContext);
+  const isToggle = useSelector((state) => state.theme.switchIsToggle);
 
   const createUTCdateToISO = (dateString) => {
     const offset = new Date().getTimezoneOffset();
@@ -267,7 +267,7 @@ const ModalOverlay = (props) => {
             <FontAwesomeIcon
               icon={faPenToSquare}
               style={{
-                color: `${ctxTheme.isToggle === true ? "#c78437" : "#2f2e41"}`,
+                color: `${isToggle === true ? "#c78437" : "#2f2e41"}`,
                 padding: " 0px 10px 0px 0px",
               }}
             />
@@ -306,15 +306,13 @@ const ModalOverlay = (props) => {
             <FontAwesomeIcon
               icon={faCalendarDays}
               style={{
-                color: `${ctxTheme.isToggle === true ? "#c78437" : "#2f2e41"}`,
+                color: `${isToggle === true ? "#c78437" : "#2f2e41"}`,
                 padding: " 0px 10px 0px 0px",
               }}
             />
             <Input
               className={`${
-                ctxTheme.isToggle === true
-                  ? styles["orange-icon"]
-                  : styles["modal-date"]
+                isToggle === true ? styles["orange-icon"] : styles["modal-date"]
               }`}
               input={{
                 type: "date",

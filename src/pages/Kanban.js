@@ -3,7 +3,6 @@ import styles from "./Kanban.module.css";
 import KanbanColumn from "../components/KanbanBoard/KanbanColumn";
 import ModalItem from "../components/KanbanBoard/ModalItem";
 import TasksContext from "../contextAPI/tasks-context";
-import ThemeModeContext from "../contextAPI/theme-mode-context";
 import ColumnItem from "../components/KanbanBoard/ColumnItem";
 import DragAndDropContext from "../contextAPI/dnd-context";
 
@@ -11,8 +10,11 @@ import { SortableContext } from "@dnd-kit/sortable";
 import { DndContext, DragOverlay } from "@dnd-kit/core";
 import ReactDOM from "react-dom";
 import ErrorModal from "../components/UI/ErrorModal";
+import { useSelector } from "react-redux";
 
 const Kanban = React.memo((props) => {
+  const isToggle = useSelector((state) => state.theme.switchIsToggle);
+
   const columnInfo = [
     { heading: "TO DO", columnId: "To do" },
     { heading: "IN PROGRESS", columnId: "In progress" },
@@ -20,7 +22,6 @@ const Kanban = React.memo((props) => {
   ];
 
   const ctxTasks = useContext(TasksContext);
-  const ctxTheme = useContext(ThemeModeContext);
   const ctxDnd = useContext(DragAndDropContext);
 
   const showScroll = () => {
@@ -76,7 +77,7 @@ const Kanban = React.memo((props) => {
     <div
       className={`${styles.kanban} ${
         showModal === true ? hideScroll() : showScroll()
-      } ${ctxTheme.isToggle === true ? styles.dark : ""}`}
+      } ${isToggle === true ? styles.dark : ""}`}
     >
       <div className={styles["kanban-heading"]}>
         <h1 className={styles["main-heading"]}>Board </h1>

@@ -2,12 +2,37 @@ import styles from "./Header.module.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsis, faMoon, faSun } from "@fortawesome/free-solid-svg-icons";
 import Switch from "../UI/Switch";
-import ThemeModeContext from "../../contextAPI/theme-mode-context";
-import { useContext } from "react";
 import { Link } from "react-router-dom";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { themeActions } from "../../store/theme-slice";
+import { setDarkMode } from "../../store/theme-slice";
+import { setLightMode } from "../../store/theme-slice";
 
 const Header = (props) => {
-  const ctxTheme = useContext(ThemeModeContext);
+  const isToggle = useSelector((state) => state.theme.switchIsToggle);
+  const dispatch = useDispatch();
+
+  const changeThemeModeHandler = (event) => {
+    if (event.target.checked) {
+      dispatch(themeActions.darkMode());
+      dispatch(setDarkMode());
+    } else {
+      dispatch(themeActions.lightMode());
+      dispatch(setLightMode());
+    }
+  };
+
+  useEffect(() => {
+    const mode = localStorage.getItem("mode");
+    if (mode === "dark") {
+      dispatch(themeActions.darkMode());
+      dispatch(setDarkMode());
+      return;
+    }
+    dispatch(themeActions.lightMode());
+    dispatch(setLightMode());
+  }, [dispatch]);
 
   return (
     <div className={styles["header"]}>
@@ -27,10 +52,7 @@ const Header = (props) => {
             icon={faSun}
             style={{ color: "#ccc", fontSize: "12px" }}
           />
-          <Switch
-            checked={ctxTheme.isToggle}
-            onChange={ctxTheme.modeThemeHandler}
-          ></Switch>
+          <Switch checked={isToggle} onChange={changeThemeModeHandler}></Switch>
           <FontAwesomeIcon
             icon={faMoon}
             style={{ color: "#ccc", fontSize: "12px" }}

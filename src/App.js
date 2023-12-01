@@ -7,7 +7,6 @@ import Ilustration from "./components/Ilustrations/Ilustration";
 import Kanban from "./pages/Kanban";
 import IlustrationBackground from "./pages/IlustrationBackground";
 import AnalyticsCard from "./pages/AnalitycsCard";
-import ThemeModeContext from "./contextAPI/theme-mode-context";
 import NavbarContext from "./contextAPI/navbar-context";
 import PageNotFound from "./pages/PageNotFound";
 import Login from "./pages/Login";
@@ -16,24 +15,23 @@ import TasksContext from "./contextAPI/tasks-context";
 import { Route, Routes, Navigate, NavLink } from "react-router-dom";
 import AuthContext from "./contextAPI/auth-context";
 import ChangePassword from "./pages/ChangePassword";
+import { useSelector } from "react-redux";
 
 const App = () => {
   const ctxNavbar = useContext(NavbarContext);
-  const ctxTheme = useContext(ThemeModeContext);
   const ctxAuth = useContext(AuthContext);
   const ctxTasks = useContext(TasksContext);
+
+  const isToggle = useSelector((state) => state.theme.switchIsToggle);
+
+  console.log("RENDERING APP");
 
   return (
     <>
       {ctxAuth.isLoggedIn && ctxNavbar.navbarAndHeaderIsShown && (
         <Header onClick={ctxNavbar.toggleNavbar} />
       )}
-      {ctxAuth.isLoggedIn && ctxNavbar.navbarAndHeaderIsShown && (
-        <Navbar
-          onMouseEnter={ctxNavbar.showNavbar}
-          onMouseLeave={ctxNavbar.hideNavbar}
-        />
-      )}
+      {ctxAuth.isLoggedIn && ctxNavbar.navbarAndHeaderIsShown && <Navbar />}
 
       <Routes>
         {ctxAuth.isLoggedIn && (
@@ -91,7 +89,7 @@ const App = () => {
         >
           <Ilustration
             className={`${styles["ilustration-newtask"]} ${
-              ctxTheme.isToggle === true ? styles["dark"] : ""
+              isToggle === true ? styles["dark"] : ""
             }`}
           />
         </NavLink>

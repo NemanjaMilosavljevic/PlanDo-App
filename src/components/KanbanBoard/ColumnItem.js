@@ -1,16 +1,16 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClock } from "@fortawesome/free-regular-svg-icons";
 import { faThumbtack, faFlag } from "@fortawesome/free-solid-svg-icons";
-import ThemeModeContext from "../../contextAPI/theme-mode-context";
 import TasksContext from "../../contextAPI/tasks-context";
 import { useContext } from "react";
 import styles from "./ColumnItem.module.css";
 import { CSS } from "@dnd-kit/utilities";
 import { useSortable } from "@dnd-kit/sortable";
+import { useSelector } from "react-redux";
 
 const ColumnItem = (props) => {
-  const ctxTheme = useContext(ThemeModeContext);
   const ctxTasks = useContext(TasksContext);
+  const isToggle = useSelector((state) => state.theme.switchIsToggle);
 
   const {
     setNodeRef,
@@ -40,7 +40,7 @@ const ColumnItem = (props) => {
           <FontAwesomeIcon
             icon={faClock}
             style={{
-              color: `${ctxTheme.isToggle === true ? "#c78437" : "#222"}`,
+              color: `${isToggle === true ? "#c78437" : "#222"}`,
               padding: "0px 5px 0px 0px",
             }}
           />
@@ -79,7 +79,7 @@ const ColumnItem = (props) => {
         <FontAwesomeIcon
           icon={faClock}
           style={{
-            color: `${ctxTheme.isToggle === true ? "#c78437" : "#222"}`,
+            color: `${isToggle === true ? "#c78437" : "#222"}`,
             padding: "0px 5px 0px 0px",
           }}
         />

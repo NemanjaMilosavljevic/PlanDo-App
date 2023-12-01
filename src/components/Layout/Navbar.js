@@ -12,7 +12,7 @@ import NavbarContext from "../../contextAPI/navbar-context";
 import AuthContext from "../../contextAPI/auth-context";
 import { Link, useNavigate } from "react-router-dom";
 
-const Navbar = React.memo((props) => {
+const Navbar = () => {
   const ctxNavbar = useContext(NavbarContext);
   const ctxAuth = useContext(AuthContext);
   const userEmail = localStorage.getItem("userEmail");
@@ -33,8 +33,8 @@ const Navbar = React.memo((props) => {
     <>
       <NavbarCard
         className={styles["nav-wrapper"]}
-        onMouseEnter={props.onMouseEnter}
-        onMouseLeave={props.onMouseLeave}
+        onMouseEnter={ctxNavbar.showNavbar}
+        onMouseLeave={ctxNavbar.hideNavbar}
       >
         <Link to="/create-task" className={styles.link}>
           <div className={styles.flexcont}>
@@ -108,6 +108,6 @@ const Navbar = React.memo((props) => {
       </NavbarCard>
     </>
   );
-});
+};
 
 export default Navbar;

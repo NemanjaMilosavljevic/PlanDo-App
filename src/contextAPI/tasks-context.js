@@ -114,7 +114,7 @@ export const TasksContextProvider = (props) => {
   const [didCreateTask, setDidCreateTask] = useState(false);
   const [confirmModalIsActive, setConfirmModalIsActive] = useState(false);
 
-  const fetchTasksOnCreate = (taskData, taskObj) => {
+  const fetchTasksOnCreate = async (taskData, taskObj) => {
     const generatedId = taskObj.name;
     const createdTask = { ...taskData, firebaseId: generatedId };
     setInitialTasks((prevState) => {
@@ -170,7 +170,7 @@ export const TasksContextProvider = (props) => {
     );
   };
 
-  const fetchTasksOnModify = (updatedTask) => {
+  const fetchTasksOnModify = async (updatedTask) => {
     for (const key of initialTasks) {
       if (updatedTask.firebaseId === key.firebaseId) {
         for (const prop in key) {
@@ -184,7 +184,7 @@ export const TasksContextProvider = (props) => {
     }
   };
 
-  const fetchTasksOnDelete = (updatedTaskList) => {
+  const fetchTasksOnDelete = async (updatedTaskList) => {
     setInitialTasks(updatedTaskList);
   };
 
@@ -197,9 +197,6 @@ export const TasksContextProvider = (props) => {
       {
         url: `https://plan-do-95624-default-rtdb.europe-west1.firebasedatabase.app/users/${userId}/tasks/${task.firebaseId}/.json`,
         method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
       },
       fetchTasksOnDelete.bind(null, updatedTasks)
     );
@@ -211,14 +208,14 @@ export const TasksContextProvider = (props) => {
 
       for (const key in taskObj) {
         initialTasks.push({
-          title: taskObj[key].title,
-          description: taskObj[key].description,
-          priority: taskObj[key].priority,
-          due: taskObj[key].due,
-          status: taskObj[key].status,
-          id: taskObj[key].id,
-          visibleId: taskObj[key].visibleId,
-          createdOn: taskObj[key].createdOn,
+          title: taskObj[key]?.title,
+          description: taskObj[key]?.description,
+          priority: taskObj[key]?.priority,
+          due: taskObj[key]?.due,
+          status: taskObj[key]?.status,
+          id: taskObj[key]?.id,
+          visibleId: taskObj[key]?.visibleId,
+          createdOn: taskObj[key]?.createdOn,
           firebaseId: key,
         });
       }

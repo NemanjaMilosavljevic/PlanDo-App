@@ -1,13 +1,13 @@
 import styles from "./IlustrationBackground.module.css";
-import ThemeModeContext from "../contextAPI/theme-mode-context";
-import { useContext } from "react";
+import { useSelector } from "react-redux";
 
 const IlustrationBackground = (props) => {
-  const ctxTheme = useContext(ThemeModeContext);
+  const isToggle = useSelector((state) => state.theme.switchIsToggle);
+
   return (
     <div
       className={`${styles["ilustration-bgc"]} ${
-        ctxTheme.isToggle === true ? styles["dark"] : ""
+        isToggle === true ? styles["dark"] : ""
       }`}
     >
       <div>

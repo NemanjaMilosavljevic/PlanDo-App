@@ -3,11 +3,11 @@ import FilterCard from "../components/Analytics/FilterCard";
 import Ilustration from "../components/Ilustrations/Ilustration";
 import styles from "./AnalitycsCard.module.css";
 import classes from "../components/Ilustrations/IlustrationAnalitycs.module.css";
-import ThemeModeContext from "../contextAPI/theme-mode-context";
-import { useContext } from "react";
+
+import { useSelector } from "react-redux";
 
 const AnalyticsCard = () => {
-  const ctxTheme = useContext(ThemeModeContext);
+  const isToggle = useSelector((state) => state.theme.switchIsToggle);
 
   return (
     <div className={styles["card-analitycs"]}>
@@ -21,7 +21,7 @@ const AnalyticsCard = () => {
       </div>
       <Ilustration
         className={`${classes["ilustration-analitycs"]} ${
-          ctxTheme.isToggle === true ? classes["dark"] : ""
+          isToggle === true ? classes["dark"] : ""
         }`}
       ></Ilustration>
     </div>
