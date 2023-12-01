@@ -1,10 +1,6 @@
 import styles from "./NavbarCard.module.css";
-import NavbarContext from "../../contextAPI/navbar-context";
-import { useContext } from "react";
 
 const NavbarCard = (props) => {
-  const ctxNavbar = useContext(NavbarContext);
-
   return (
     <div
       className={props.className}
@@ -12,11 +8,9 @@ const NavbarCard = (props) => {
       onMouseLeave={props.onMouseLeave}
     >
       <ul>
-        <li onClick={ctxNavbar.showCreateTask} className={styles["bold-text"]}>
-          {props.children[0]}
-        </li>
-        <li onClick={ctxNavbar.showKanban}>{props.children[1]} </li>
-        <li onClick={ctxNavbar.showAnalitycs}>{props.children[2]}</li>
+        <li className={styles["bold-text"]}>{props.children[0]}</li>
+        <li>{props.children[1]} </li>
+        <li>{props.children[2]}</li>
       </ul>
       <ul id={styles["acc-list"]}>
         <li>{props.children[3]}</li>

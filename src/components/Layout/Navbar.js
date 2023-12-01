@@ -7,16 +7,20 @@ import {
 import { faClipboard, faCircleUser } from "@fortawesome/free-regular-svg-icons";
 import styles from "./Navbar.module.css";
 import NavbarCard from "../UI/NavbarCard";
-import React, { useContext } from "react";
-import NavbarContext from "../../contextAPI/navbar-context";
+import React, { useContext, useEffect, useRef } from "react";
 import AuthContext from "../../contextAPI/auth-context";
 import { Link, useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { navbarActions } from "../../store/navbar-slice";
 
 const Navbar = () => {
-  const ctxNavbar = useContext(NavbarContext);
   const ctxAuth = useContext(AuthContext);
   const userEmail = localStorage.getItem("userEmail");
   const navigate = useNavigate();
+  const accountRef = useRef();
+
+  const navbar = useSelector((state) => state.navbar);
+  const dispatch = useDispatch();
 
   const changeAccountHandler = () => {
     ctxAuth.logout();
@@ -25,28 +29,49 @@ const Navbar = () => {
 
   const setNewPasswordHandler = (event) => {
     event.stopPropagation();
-    ctxNavbar.hideAccountSettings();
+    dispatch(navbarActions.hideAccountSettings());
     navigate({ pathname: "/update-password" });
   };
+
+  const onMouseEnterHandler = () => {
+    dispatch(navbarActions.showNavbar());
+  };
+  const onMouseLeaveHandler = () => {
+    dispatch(navbarActions.hideNavbar());
+  };
+
+  const showAccountHandler = () => {
+    dispatch(navbarActions.showAccountSettings());
+  };
+
+  useEffect(() => {
+    const onCloseOutsideClickHandler = (event) => {
+      if (!accountRef.current?.contains(event.target)) {
+        dispatch(navbarActions.hideAccountSettings());
+      }
+    };
+
+    document.addEventListener("click", onCloseOutsideClickHandler, true);
+  }, [dispatch]);
 
   return (
     <>
       <NavbarCard
         className={styles["nav-wrapper"]}
-        onMouseEnter={ctxNavbar.showNavbar}
-        onMouseLeave={ctxNavbar.hideNavbar}
+        onMouseEnter={onMouseEnterHandler}
+        onMouseLeave={onMouseLeaveHandler}
       >
         <Link to="/create-task" className={styles.link}>
           <div className={styles.flexcont}>
             <FontAwesomeIcon icon={faClipboard} style={{ color: "#000" }} />
-            {ctxNavbar.isNavbarShowed && <span>Create New Task</span>}
+            {navbar.isShown && <span>Create New Task</span>}
           </div>
         </Link>
 
         <Link to="/kanban" className={styles.link}>
           <div className={styles.flexcont}>
             <FontAwesomeIcon icon={faTableColumns} style={{ color: "#000 " }} />
-            {ctxNavbar.isNavbarShowed && (
+            {navbar.isShown && (
               <span className={styles["span-text"]}>Kanban Board</span>
             )}
           </div>
@@ -59,27 +84,24 @@ const Navbar = () => {
                 color: "#000",
               }}
             />
-            {ctxNavbar.isNavbarShowed && (
+            {navbar.isShown && (
               <span className={styles["span-text"]}>Analitycs</span>
             )}
           </div>
         </Link>
 
-        <div
-          className={styles.flexcont}
-          onClick={ctxNavbar.showAccountSettings}
-        >
+        <div className={styles.flexcont} onClick={showAccountHandler}>
           <FontAwesomeIcon icon={faCircleUser} style={{ color: "#000" }} />
-          {ctxNavbar.isNavbarShowed && (
+          {navbar.isShown && (
             <span className={styles["span-text"]}>Account</span>
           )}
 
           <div
             className={`${styles.container} ${
-              ctxNavbar.showAccountBar ? styles.visible : ""
+              navbar.showAccountBar ? styles.visible : ""
             }`}
             id="proba"
-            ref={ctxNavbar.accountRef}
+            ref={accountRef}
           >
             <ul className={styles.list}>
               <li>
@@ -100,7 +122,7 @@ const Navbar = () => {
               icon={faArrowRightFromBracket}
               style={{ color: "#000" }}
             />
-            {ctxNavbar.isNavbarShowed && (
+            {navbar.isShown && (
               <span className={styles["span-text"]}>Sign out</span>
             )}
           </div>

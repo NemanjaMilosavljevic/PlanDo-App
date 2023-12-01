@@ -8,8 +8,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { themeActions } from "../../store/theme-slice";
 import { setDarkMode } from "../../store/theme-slice";
 import { setLightMode } from "../../store/theme-slice";
+import { navbarActions } from "../../store/navbar-slice";
 
-const Header = (props) => {
+const Header = () => {
   const isToggle = useSelector((state) => state.theme.switchIsToggle);
   const dispatch = useDispatch();
 
@@ -21,6 +22,10 @@ const Header = (props) => {
       dispatch(themeActions.lightMode());
       dispatch(setLightMode());
     }
+  };
+
+  const toggleNavbarHandler = () => {
+    dispatch(navbarActions.toggleNavbar());
   };
 
   useEffect(() => {
@@ -40,7 +45,7 @@ const Header = (props) => {
         <FontAwesomeIcon
           icon={faEllipsis}
           style={{ color: "#ffffff", cursor: "pointer", fontSize: "1.25rem" }}
-          onClick={props.onClick}
+          onClick={toggleNavbarHandler}
         />
         <Link to="/home" className={styles.link}>
           <img src="Images/plndo.png" alt="logo" />

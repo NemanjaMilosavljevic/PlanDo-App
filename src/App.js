@@ -7,7 +7,6 @@ import Ilustration from "./components/Ilustrations/Ilustration";
 import Kanban from "./pages/Kanban";
 import IlustrationBackground from "./pages/IlustrationBackground";
 import AnalyticsCard from "./pages/AnalitycsCard";
-import NavbarContext from "./contextAPI/navbar-context";
 import PageNotFound from "./pages/PageNotFound";
 import Login from "./pages/Login";
 import styles from "./components/Ilustrations/Ilustration.module.css";
@@ -18,20 +17,18 @@ import ChangePassword from "./pages/ChangePassword";
 import { useSelector } from "react-redux";
 
 const App = () => {
-  const ctxNavbar = useContext(NavbarContext);
   const ctxAuth = useContext(AuthContext);
   const ctxTasks = useContext(TasksContext);
 
+  const navbar = useSelector((state) => state.navbar);
   const isToggle = useSelector((state) => state.theme.switchIsToggle);
 
   console.log("RENDERING APP");
 
   return (
     <>
-      {ctxAuth.isLoggedIn && ctxNavbar.navbarAndHeaderIsShown && (
-        <Header onClick={ctxNavbar.toggleNavbar} />
-      )}
-      {ctxAuth.isLoggedIn && ctxNavbar.navbarAndHeaderIsShown && <Navbar />}
+      {ctxAuth.isLoggedIn && navbar.navbarAndHeaderIsShown && <Header />}
+      {ctxAuth.isLoggedIn && navbar.navbarAndHeaderIsShown && <Navbar />}
 
       <Routes>
         {ctxAuth.isLoggedIn && (

@@ -2,7 +2,6 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import App from "./App";
 import { TasksContextProvider } from "./contextAPI/tasks-context";
-import { NavbarContextProvider } from "./contextAPI/navbar-context";
 import { AuthContextProvider } from "./contextAPI/auth-context";
 import { DragAndDropContextProvider } from "./contextAPI/dnd-context";
 import { BrowserRouter } from "react-router-dom";
@@ -16,9 +15,7 @@ root.render(
       <AuthContextProvider>
         <TasksContextProvider>
           <DragAndDropContextProvider>
-            <NavbarContextProvider>
-              <App />
-            </NavbarContextProvider>
+            <App />
           </DragAndDropContextProvider>
         </TasksContextProvider>
       </AuthContextProvider>
