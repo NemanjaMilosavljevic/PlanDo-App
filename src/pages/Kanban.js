@@ -12,7 +12,7 @@ import ReactDOM from "react-dom";
 import ErrorModal from "../components/UI/ErrorModal";
 import { useSelector } from "react-redux";
 
-const Kanban = React.memo((props) => {
+const Kanban = React.memo(() => {
   const isToggle = useSelector((state) => state.theme.switchIsToggle);
 
   const columnInfo = [

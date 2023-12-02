@@ -3,7 +3,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsis, faMoon, faSun } from "@fortawesome/free-solid-svg-icons";
 import Switch from "../UI/Switch";
 import { Link } from "react-router-dom";
-import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { themeActions } from "../../store/theme-slice";
 import { setDarkMode } from "../../store/theme-slice";
@@ -27,17 +26,6 @@ const Header = () => {
   const toggleNavbarHandler = () => {
     dispatch(navbarActions.toggleNavbar());
   };
-
-  useEffect(() => {
-    const mode = localStorage.getItem("mode");
-    if (mode === "dark") {
-      dispatch(themeActions.darkMode());
-      dispatch(setDarkMode());
-      return;
-    }
-    dispatch(themeActions.lightMode());
-    dispatch(setLightMode());
-  }, [dispatch]);
 
   return (
     <div className={styles["header"]}>

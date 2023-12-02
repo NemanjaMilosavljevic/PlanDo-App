@@ -1,7 +1,7 @@
 import styles from "./IlustrationBackground.module.css";
 import { useSelector } from "react-redux";
 
-const IlustrationBackground = (props) => {
+const IlustrationBackground = () => {
   const isToggle = useSelector((state) => state.theme.switchIsToggle);
 
   return (

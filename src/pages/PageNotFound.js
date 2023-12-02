@@ -9,8 +9,8 @@ import { navbarActions } from "../store/navbar-slice";
 
 const PageNotFound = () => {
   const isToggle = useSelector((state) => state.theme.switchIsToggle);
-  const navbar = useSelector(
-    (state) => state.navbar.hideNabvarAndHeaderHandler
+  const navbarAndHeaderIsShown = useSelector(
+    (state) => state.navbar.navbarAndHeaderIsShown
   );
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -22,7 +22,7 @@ const PageNotFound = () => {
 
   useEffect(() => {
     dispatch(navbarActions.hideNavbarAndHeader());
-  }, [navbar, dispatch]);
+  }, [navbarAndHeaderIsShown, dispatch]);
 
   return (
     <div className={styles.wraper}>

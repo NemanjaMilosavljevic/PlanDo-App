@@ -3,7 +3,6 @@ import TasksContext from "./tasks-context";
 import useHttp from "../hooks/use-http";
 import { PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
 import { arrayMove } from "@dnd-kit/sortable";
-import AuthContext from "./auth-context";
 
 const DragAndDropContext = React.createContext({
   onDragStart: () => {},
@@ -20,8 +19,8 @@ const DragAndDropContext = React.createContext({
 export const DragAndDropContextProvider = (props) => {
   const ctxTasks = useContext(TasksContext);
   const { initialTasks, setInitialTasks, setIsModifiedTask } = ctxTasks;
-  const ctxAuth = useContext(AuthContext);
-  const { userId } = ctxAuth;
+
+  const userId = localStorage.getItem("localId");
   const { error, sendRequest, clearError } = useHttp();
   const [activeItem, setActiveItem] = useState(null);
 

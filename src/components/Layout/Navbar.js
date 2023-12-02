@@ -7,24 +7,28 @@ import {
 import { faClipboard, faCircleUser } from "@fortawesome/free-regular-svg-icons";
 import styles from "./Navbar.module.css";
 import NavbarCard from "../UI/NavbarCard";
-import React, { useContext, useEffect, useRef } from "react";
-import AuthContext from "../../contextAPI/auth-context";
+import React, { useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { navbarActions } from "../../store/navbar-slice";
+import { logoutHandler } from "../../store/auth-slice";
 
 const Navbar = () => {
-  const ctxAuth = useContext(AuthContext);
+  const dispatch = useDispatch();
+  const navbar = useSelector((state) => state.navbar);
+  const { isShown, showAccountBar } = navbar;
+
   const userEmail = localStorage.getItem("userEmail");
   const navigate = useNavigate();
   const accountRef = useRef();
 
-  const navbar = useSelector((state) => state.navbar);
-  const dispatch = useDispatch();
-
   const changeAccountHandler = () => {
-    ctxAuth.logout();
+    dispatch(logoutHandler());
     navigate({ pathname: "/sign-in" });
+  };
+
+  const signOut = () => {
+    dispatch(logoutHandler());
   };
 
   const setNewPasswordHandler = (event) => {
@@ -64,14 +68,14 @@ const Navbar = () => {
         <Link to="/create-task" className={styles.link}>
           <div className={styles.flexcont}>
             <FontAwesomeIcon icon={faClipboard} style={{ color: "#000" }} />
-            {navbar.isShown && <span>Create New Task</span>}
+            {isShown && <span>Create New Task</span>}
           </div>
         </Link>
 
         <Link to="/kanban" className={styles.link}>
           <div className={styles.flexcont}>
             <FontAwesomeIcon icon={faTableColumns} style={{ color: "#000 " }} />
-            {navbar.isShown && (
+            {isShown && (
               <span className={styles["span-text"]}>Kanban Board</span>
             )}
           </div>
@@ -84,21 +88,17 @@ const Navbar = () => {
                 color: "#000",
               }}
             />
-            {navbar.isShown && (
-              <span className={styles["span-text"]}>Analitycs</span>
-            )}
+            {isShown && <span className={styles["span-text"]}>Analitycs</span>}
           </div>
         </Link>
 
         <div className={styles.flexcont} onClick={showAccountHandler}>
           <FontAwesomeIcon icon={faCircleUser} style={{ color: "#000" }} />
-          {navbar.isShown && (
-            <span className={styles["span-text"]}>Account</span>
-          )}
+          {isShown && <span className={styles["span-text"]}>Account</span>}
 
           <div
             className={`${styles.container} ${
-              navbar.showAccountBar ? styles.visible : ""
+              showAccountBar ? styles.visible : ""
             }`}
             id="proba"
             ref={accountRef}
@@ -116,15 +116,13 @@ const Navbar = () => {
           </div>
         </div>
 
-        <Link to="/sign-in" className={styles.link} onClick={ctxAuth.logout}>
+        <Link to="/sign-in" className={styles.link} onClick={signOut}>
           <div className={styles.flexcont}>
             <FontAwesomeIcon
               icon={faArrowRightFromBracket}
               style={{ color: "#000" }}
             />
-            {navbar.isShown && (
-              <span className={styles["span-text"]}>Sign out</span>
-            )}
+            {isShown && <span className={styles["span-text"]}>Sign out</span>}
           </div>
         </Link>
       </NavbarCard>
