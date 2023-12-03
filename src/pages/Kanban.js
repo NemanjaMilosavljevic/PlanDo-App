@@ -2,18 +2,19 @@ import React, { useState, useContext, useEffect } from "react";
 import styles from "./Kanban.module.css";
 import KanbanColumn from "../components/KanbanBoard/KanbanColumn";
 import ModalItem from "../components/KanbanBoard/ModalItem";
-import TasksContext from "../contextAPI/tasks-context";
 import ColumnItem from "../components/KanbanBoard/ColumnItem";
 import DragAndDropContext from "../contextAPI/dnd-context";
-
 import { SortableContext } from "@dnd-kit/sortable";
 import { DndContext, DragOverlay } from "@dnd-kit/core";
 import ReactDOM from "react-dom";
 import ErrorModal from "../components/UI/ErrorModal";
 import { useSelector } from "react-redux";
+import useHttp from "../hooks/use-http";
 
 const Kanban = React.memo(() => {
+  const { error, clearError } = useHttp();
   const isToggle = useSelector((state) => state.theme.switchIsToggle);
+  const initialTasks = useSelector((state) => state.tasks.initialTasks);
 
   const columnInfo = [
     { heading: "TO DO", columnId: "To do" },
@@ -21,7 +22,6 @@ const Kanban = React.memo(() => {
     { heading: "DONE", columnId: "Done" },
   ];
 
-  const ctxTasks = useContext(TasksContext);
   const ctxDnd = useContext(DragAndDropContext);
 
   const showScroll = () => {
@@ -51,7 +51,7 @@ const Kanban = React.memo(() => {
 
   const showModalHandler = (taskId) => {
     let filteredItem = {};
-    for (const task of ctxTasks.initialTasks) {
+    for (const task of initialTasks) {
       if (taskId === task.id) {
         filteredItem = task;
       }
@@ -136,8 +136,8 @@ const Kanban = React.memo(() => {
           document.body
         )}
       </DndContext>
-      {!showModal && ctxTasks.error && (
-        <ErrorModal onClose={ctxTasks.clearError}>{ctxTasks.error}</ErrorModal>
+      {!showModal && error && (
+        <ErrorModal onClose={clearError}>{error}</ErrorModal>
       )}
       {!showModal && ctxDnd.error && (
         <ErrorModal onClose={ctxDnd.clearError}>{ctxDnd.error}</ErrorModal>

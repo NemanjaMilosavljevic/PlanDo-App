@@ -1,16 +1,14 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClock } from "@fortawesome/free-regular-svg-icons";
 import { faThumbtack, faFlag } from "@fortawesome/free-solid-svg-icons";
-import TasksContext from "../../contextAPI/tasks-context";
-import { useContext } from "react";
 import styles from "./ColumnItem.module.css";
 import { CSS } from "@dnd-kit/utilities";
 import { useSortable } from "@dnd-kit/sortable";
 import { useSelector } from "react-redux";
 
 const ColumnItem = (props) => {
-  const ctxTasks = useContext(TasksContext);
   const isToggle = useSelector((state) => state.theme.switchIsToggle);
+  const initialTasks = useSelector((state) => state.tasks.initialTasks);
 
   const {
     setNodeRef,
@@ -23,7 +21,7 @@ const ColumnItem = (props) => {
     id: props.id,
     data: {
       type: "item",
-      task: ctxTasks.initialTasks.filter((task) => task.id === props.id),
+      task: initialTasks.filter((task) => task.id === props.id),
     },
   });
 

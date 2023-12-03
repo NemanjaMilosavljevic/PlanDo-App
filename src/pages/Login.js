@@ -73,7 +73,6 @@ const Login = () => {
 
     dispatch(loginHandler(userCredentials, sendRequest, auth, navigate));
   };
-  console.log(auth);
 
   useEffect(() => {
     const signOut = () => {

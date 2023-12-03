@@ -1,5 +1,3 @@
-import React, { useContext } from "react";
-import TasksContext from "../../contextAPI/tasks-context";
 import {
   BarChart,
   Bar,
@@ -10,26 +8,27 @@ import {
   Tooltip,
 } from "recharts";
 import styles from "./Chart.module.css";
+import { useSelector } from "react-redux";
 
 const Chart = () => {
-  const ctxTask = useContext(TasksContext);
+  const filteredTasks = useSelector((state) => state.chart.filteredTasks);
 
   const sumToDo = () => {
-    const filteredItems = ctxTask.filterState.filteredTasks.filter((task) => {
+    const filteredItems = filteredTasks.filter((task) => {
       return task.status === "To do";
     });
     return filteredItems.length;
   };
 
   const sumInProgress = () => {
-    const filteredItems = ctxTask.filterState.filteredTasks.filter((task) => {
+    const filteredItems = filteredTasks.filter((task) => {
       return task.status === "In progress";
     });
     return filteredItems.length;
   };
 
   const sumDone = () => {
-    const filteredItems = ctxTask.filterState.filteredTasks.filter((task) => {
+    const filteredItems = filteredTasks.filter((task) => {
       return task.status === "Done";
     });
     return filteredItems.length;

@@ -8,7 +8,7 @@ const DropdownInput = React.forwardRef((props, ref) => {
       <label className={styles.label} htmlFor={props.dropdownInput.id}>
         {props.label}
       </label>
-      <select className={classes} {...props.dropdownInput} ref={ref}>
+      <select className={classes} {...props.dropdownInput} ref={props.inputRef}>
         {props.children}
       </select>
     </>

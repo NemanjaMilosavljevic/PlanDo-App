@@ -5,14 +5,13 @@ import {
   faRectangleList,
   faSquareCheck,
 } from "@fortawesome/free-regular-svg-icons";
-import TasksContext from "../../contextAPI/tasks-context";
-import React, { useContext } from "react";
+import React from "react";
 import styles from "./KanbanColumn.module.css";
 import { useDroppable } from "@dnd-kit/core";
 import { useSelector } from "react-redux";
 
 const KanbanColumn = (props) => {
-  const ctxTasks = useContext(TasksContext);
+  const initialTasks = useSelector((state) => state.tasks.initialTasks);
   const isToggle = useSelector((state) => state.theme.switchIsToggle);
 
   const { setNodeRef, listeners, attributes } = useDroppable({
@@ -58,7 +57,7 @@ const KanbanColumn = (props) => {
         {props.setHeadings}
       </h4>
 
-      {ctxTasks.initialTasks.map((task) =>
+      {initialTasks.map((task) =>
         task.status === props.columnId ? (
           <ColumnItem
             task={task}

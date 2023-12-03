@@ -1,7 +1,6 @@
 import styles from "./TaskForm.module.css";
-import { useState, useContext } from "react";
+import { useState, useEffect } from "react";
 import ReactDOM from "react-dom";
-import TasksContext from "../contextAPI/tasks-context";
 import Button from "../components/UI/Button";
 import Input from "../components/UI/Input";
 import Textarea from "../components/UI/Textarea";
@@ -9,9 +8,15 @@ import DropdownInput from "../components/UI/DropdownInput";
 import ConfirmModal from "../components/UI/ConfirmModal";
 import ClipLoader from "react-spinners/ClipLoader";
 import ErrorModal from "../components/UI/ErrorModal";
+import useHttp from "../hooks/use-http";
+import { useSelector, useDispatch } from "react-redux";
+import { tasksActions, CreateTask } from "../store/tasks-slice";
 
 const TaskForm = () => {
-  const ctxTasks = useContext(TasksContext);
+  const { isLoading, error, sendRequest, clearError } = useHttp();
+  const dispatch = useDispatch();
+  const tasks = useSelector((state) => state.tasks);
+  const { initialTasks, confirmModalIsActive } = tasks;
 
   const [enteredTitle, setEnteredTitle] = useState("");
   const [enteredDescription, setEnteredDescription] = useState("");
@@ -44,7 +49,7 @@ const TaskForm = () => {
   };
 
   const visibleIdHandler = () => {
-    const arrayOfVisibleIds = ctxTasks.initialTasks.map((task) => {
+    const arrayOfVisibleIds = initialTasks.map((task) => {
       const numberPartOfVisibleId = +task.visibleId.slice(5);
       return numberPartOfVisibleId;
     });
@@ -67,7 +72,7 @@ const TaskForm = () => {
       status: enteredStatus,
       id: Math.floor(Math.random() * 10000000 + 1),
       visibleId:
-        ctxTasks.initialTasks.length === 0
+        initialTasks.length === 0
           ? "TASK-1"
           : "TASK-" + (visibleIdHandler() + 1),
       createdOn: new Date().toLocaleString("en-US", {
@@ -76,7 +81,8 @@ const TaskForm = () => {
         year: "numeric",
       }),
     };
-    ctxTasks.onCreateTask(taskData);
+
+    dispatch(CreateTask(taskData, sendRequest));
 
     setEnteredTitle("");
     setEnteredDescription("");
@@ -86,15 +92,21 @@ const TaskForm = () => {
     checkbox.checked = false;
   };
 
+  useEffect(() => {
+    if (confirmModalIsActive) {
+      dispatch(tasksActions.isTaskCreated());
+    }
+  }, [confirmModalIsActive, dispatch]);
+
   return (
     <>
-      {ctxTasks.confirmModalIsActive &&
+      {confirmModalIsActive &&
         ReactDOM.createPortal(
           <ConfirmModal></ConfirmModal>,
           document.getElementById("confirm-modal")
         )}
 
-      {ctxTasks.isLoading ? (
+      {isLoading ? (
         <ClipLoader
           color={"#c78437"}
           loading={true}
@@ -165,12 +177,8 @@ const TaskForm = () => {
                 <option value="Done">Done</option>
               </DropdownInput>
 
-              {ctxTasks.error && (
-                <ErrorModal onClose={ctxTasks.clearError}>
-                  {ctxTasks.error}
-                </ErrorModal>
-              )}
-              {!ctxTasks.error && (
+              {error && <ErrorModal onClose={clearError}>{error}</ErrorModal>}
+              {!error && (
                 <Button button={{ type: "submit" }}>Create task</Button>
               )}
             </form>

@@ -1,19 +1,23 @@
 import styles from "./ModalOverlay.module.css";
-import { useContext, useReducer } from "react";
+import { useReducer } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare } from "@fortawesome/free-regular-svg-icons";
 import { faCalendarDays } from "@fortawesome/free-solid-svg-icons";
-import TasksContext from "../../contextAPI/tasks-context";
 import Button from "./Button";
 import Input from "./Input";
 import DropdownInput from "./DropdownInput";
 import Textarea from "./Textarea";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { UpdateTask, deleteTaskHandler } from "../../store/tasks-slice";
+import useHttp from "../../hooks/use-http";
 
 import CSSTransition from "react-transition-group/CSSTransition";
 
 const ModalOverlay = (props) => {
-  const ctxTasks = useContext(TasksContext);
+  const dispatch = useDispatch();
+  const initialTasks = useSelector((state) => state.tasks.initialTasks);
+  const { sendRequest } = useHttp();
+
   const isToggle = useSelector((state) => state.theme.switchIsToggle);
 
   const createUTCdateToISO = (dateString) => {
@@ -190,7 +194,8 @@ const ModalOverlay = (props) => {
       firebaseId: updatedState.firebaseId,
     };
 
-    ctxTasks.onUpdateTask(updatedTask);
+    dispatch(UpdateTask(updatedTask, sendRequest, initialTasks));
+
     props.onRemoveModal();
   };
 
@@ -211,7 +216,9 @@ const ModalOverlay = (props) => {
       createdOn: updatedState.createdOn,
       firebaseId: updatedState.firebaseId,
     };
-    ctxTasks.onRemoveTask(deletedTask);
+
+    dispatch(deleteTaskHandler(deletedTask, sendRequest, initialTasks));
+
     props.onRemoveModal();
   };
 

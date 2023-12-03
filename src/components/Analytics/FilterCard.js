@@ -1,21 +1,51 @@
-import { useContext } from "react";
-import TasksContext from "../../contextAPI/tasks-context";
 import styles from "./FilterCard.module.css";
 import DropdownInput from "../UI/DropdownInput";
+import { useRef, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { chartActions } from "../../store/chart-slice";
+import { tasksActions } from "../../store/tasks-slice";
 
 const FilterCard = () => {
-  const ctxTasks = useContext(TasksContext);
+  const monthRef = useRef();
+  const priorityRef = useRef();
+
+  const dispatch = useDispatch();
+  const chart = useSelector((state) => state.chart);
+  const { filteredMonth, filteredPriority } = chart;
+
+  const tasks = useSelector((state) => state.tasks);
+  const { isModifiedTask, initialTasks } = tasks;
+
+  const filterMonthHandler = (event) => {
+    dispatch(chartActions.setFilterMonth(event.target.value));
+    dispatch(chartActions.filterTasks({ initialTasks, monthRef, priorityRef }));
+  };
+
+  const filterPriorityHandler = (event) => {
+    dispatch(chartActions.setFilterPriority(event.target.value));
+    dispatch(chartActions.filterTasks({ initialTasks, monthRef, priorityRef }));
+  };
+
+  useEffect(() => {
+    dispatch(chartActions.setFilterMonth("All"));
+    dispatch(chartActions.setFilterPriority("All"));
+    dispatch(chartActions.setFilteredTasks(initialTasks));
+
+    return () => {
+      dispatch(tasksActions.isTaskNotUpdated());
+    };
+  }, [initialTasks, isModifiedTask, dispatch]);
 
   return (
     <div className={styles["filter-wrapper"]}>
       <label id={styles.label}>Filter by:</label>
       <DropdownInput
-        ref={ctxTasks.monthRef}
+        inputRef={monthRef}
         className={styles["filter-select"]}
         dropdownInput={{
-          onChange: ctxTasks.onFilteredMonth,
+          onChange: filterMonthHandler,
           id: styles["filter-select"],
-          value: ctxTasks.filterState.filteredMonth,
+          value: filteredMonth,
         }}
       >
         <option value="All">Month</option>
@@ -34,12 +64,12 @@ const FilterCard = () => {
       </DropdownInput>
 
       <DropdownInput
-        ref={ctxTasks.priorityRef}
+        inputRef={priorityRef}
         className={styles["filter-select-second"]}
         dropdownInput={{
-          onChange: ctxTasks.onFilteredPriority,
+          onChange: filterPriorityHandler,
           id: styles["filter-select-second"],
-          value: ctxTasks.filterState.filteredPriority,
+          value: filteredPriority,
         }}
       >
         <option value="All">Priority</option>
