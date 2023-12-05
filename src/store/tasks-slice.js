@@ -7,8 +7,6 @@ const initialState = {
   confirmModalIsActive: false,
 };
 
-const userId = localStorage.getItem("localId");
-
 const tasksSlice = createSlice({
   name: "tasks",
   initialState,
@@ -40,24 +38,18 @@ const tasksSlice = createSlice({
       state.initialTasks.push(newTask);
     },
     updateTask(state, action) {
-      let initialTasks = action.payload.initialTasks;
-      const updatedTask = action.payload.updatedTask;
+      const { initialTasks, updatedTask } = action.payload;
 
-      for (const task of initialTasks) {
-        if (updatedTask.firebaseId === task.firebaseId) {
-          for (const prop in task) {
-            if (!(task[prop] === updatedTask[prop])) {
-              task[prop] = updatedTask[prop];
-            }
-          }
-
-          state.initialTasks = initialTasks;
+      state.initialTasks = initialTasks.map((task) => {
+        if (task.id === updatedTask.id) {
+          return { ...updatedTask };
+        } else {
+          return { ...task };
         }
-      }
+      });
     },
     deleteTask(state, action) {
-      const initialTasks = action.payload.initialTasks;
-      const deletedTask = action.payload.deletedTask;
+      const { initialTasks, deletedTask } = action.payload;
 
       let updatedTasks = initialTasks.filter(
         (item) => item.firebaseId !== deletedTask.firebaseId
@@ -91,7 +83,7 @@ const fetchTasksOnCreate = (taskData, dispatch, taskObj) => {
   }, 3000);
 };
 
-export const CreateTask = (taskData, sendRequest) => {
+export const CreateTask = (taskData, sendRequest, userId) => {
   return async (dispatch) => {
     sendRequest(
       {
@@ -109,12 +101,24 @@ export const CreateTask = (taskData, sendRequest) => {
 
 // Sending http request for updating task
 
-const fetchTasksOnModify = (updatedTask, dispatch, initialTasks) => {
+const fetchTasksOnModify = (
+  updatedTask,
+  dispatch,
+  initialTasks,
+  onRemoveModal
+) => {
+  onRemoveModal();
   dispatch(tasksActions.isTaskUpdated());
   dispatch(tasksActions.updateTask({ initialTasks, updatedTask }));
 };
 
-export const UpdateTask = (updatedTask, sendRequest, initialTasks) => {
+export const UpdateTask = (
+  updatedTask,
+  sendRequest,
+  initialTasks,
+  userId,
+  onRemoveModal
+) => {
   return async (dispatch) => {
     sendRequest(
       {
@@ -125,25 +129,49 @@ export const UpdateTask = (updatedTask, sendRequest, initialTasks) => {
         },
         body: updatedTask,
       },
-      fetchTasksOnModify.bind(null, updatedTask, dispatch, initialTasks)
+      fetchTasksOnModify.bind(
+        null,
+        updatedTask,
+        dispatch,
+        initialTasks,
+        onRemoveModal
+      )
     );
   };
 };
 
 // Sending http request for deleting task
 
-const fetchTasksOnDelete = (deletedTask, dispatch, initialTasks) => {
+const fetchTasksOnDelete = (
+  deletedTask,
+  dispatch,
+  initialTasks,
+  onRemoveModal
+) => {
+  onRemoveModal();
   dispatch(tasksActions.deleteTask({ initialTasks, deletedTask }));
 };
 
-export const deleteTaskHandler = (deletedTask, sendRequest, initialTasks) => {
+export const deleteTaskHandler = (
+  deletedTask,
+  sendRequest,
+  initialTasks,
+  userId,
+  onRemoveModal
+) => {
   return async (dispatch) => {
     sendRequest(
       {
         url: `https://plan-do-95624-default-rtdb.europe-west1.firebasedatabase.app/users/${userId}/tasks/${deletedTask.firebaseId}/.json`,
         method: "DELETE",
       },
-      fetchTasksOnDelete.bind(null, deletedTask, dispatch, initialTasks)
+      fetchTasksOnDelete.bind(
+        null,
+        deletedTask,
+        dispatch,
+        initialTasks,
+        onRemoveModal
+      )
     );
   };
 };

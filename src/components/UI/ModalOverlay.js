@@ -1,4 +1,5 @@
 import styles from "./ModalOverlay.module.css";
+import ReactDOM from "react-dom";
 import { useReducer } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare } from "@fortawesome/free-regular-svg-icons";
@@ -7,6 +8,7 @@ import Button from "./Button";
 import Input from "./Input";
 import DropdownInput from "./DropdownInput";
 import Textarea from "./Textarea";
+import ErrorModal from "./ErrorModal";
 import { useSelector, useDispatch } from "react-redux";
 import { UpdateTask, deleteTaskHandler } from "../../store/tasks-slice";
 import useHttp from "../../hooks/use-http";
@@ -14,9 +16,10 @@ import useHttp from "../../hooks/use-http";
 import CSSTransition from "react-transition-group/CSSTransition";
 
 const ModalOverlay = (props) => {
+  const userId = localStorage.getItem("localId");
   const dispatch = useDispatch();
   const initialTasks = useSelector((state) => state.tasks.initialTasks);
-  const { sendRequest } = useHttp();
+  const { error, clearError, sendRequest } = useHttp();
 
   const isToggle = useSelector((state) => state.theme.switchIsToggle);
 
@@ -194,13 +197,20 @@ const ModalOverlay = (props) => {
       firebaseId: updatedState.firebaseId,
     };
 
-    dispatch(UpdateTask(updatedTask, sendRequest, initialTasks));
-
-    props.onRemoveModal();
+    dispatch(
+      UpdateTask(
+        updatedTask,
+        sendRequest,
+        initialTasks,
+        userId,
+        props.onRemoveModal
+      )
+    );
   };
 
   const onDeleteTask = (event) => {
     event.preventDefault();
+
     const deletedTask = {
       title: updatedState.enteredTitle,
       description: updatedState.enteredDescription,
@@ -217,142 +227,161 @@ const ModalOverlay = (props) => {
       firebaseId: updatedState.firebaseId,
     };
 
-    dispatch(deleteTaskHandler(deletedTask, sendRequest, initialTasks));
-
-    props.onRemoveModal();
+    dispatch(
+      deleteTaskHandler(
+        deletedTask,
+        sendRequest,
+        initialTasks,
+        userId,
+        props.onRemoveModal
+      )
+    );
   };
 
   let classes = `${styles["modal-container"]} ${props.className}`;
 
   return (
-    <CSSTransition
-      timeout={600}
-      in={props.modalIsActive}
-      mountOnEnter
-      unmountOnExit
-      classNames={{
-        enter: "",
-        enterActive: `${styles.animationEnter}`,
-        exit: "",
-        exitActive: `${styles.animationExit}`,
-      }}
-    >
-      <div className={classes}>
-        <form onSubmit={updateTaskHandler} className={styles["modal-form"]}>
-          <div className={styles["modal-heading"]}>
-            <span className={styles["visible-id"]}>
-              {updatedState.visibleId}
-            </span>
-            <Textarea
-              textarea={{
-                type: "textarea",
-                rows: "2",
-                id: styles["modal-title"],
-                value: updatedState.enteredTitle,
-                onChange: titleChangeHandler,
-              }}
-            />
-          </div>
+    <>
+      {!error && (
+        <CSSTransition
+          timeout={600}
+          in={props.modalIsActive}
+          mountOnEnter
+          unmountOnExit
+          classNames={{
+            enter: "",
+            enterActive: `${styles.animationEnter}`,
+            exit: "",
+            exitActive: `${styles.animationExit}`,
+          }}
+        >
+          <div className={classes}>
+            <form onSubmit={updateTaskHandler} className={styles["modal-form"]}>
+              <div className={styles["modal-heading"]}>
+                <span className={styles["visible-id"]}>
+                  {updatedState.visibleId}
+                </span>
+                <Textarea
+                  textarea={{
+                    type: "textarea",
+                    rows: "2",
+                    id: styles["modal-title"],
+                    value: updatedState.enteredTitle,
+                    onChange: titleChangeHandler,
+                  }}
+                />
+              </div>
 
-          <div className={styles["status"]}>
-            <span className={styles["inline-text"]}>Sorted in:</span>
-            <DropdownInput
-              className={styles["select-list"]}
-              dropdownInput={{
-                id: styles["modal-select-field"],
-                value: updatedState.enteredStatus,
-                onChange: statusChangeHandler,
-              }}
-            >
-              <option value="To do">To do</option>
-              <option value="In progress">In progress</option>
-              <option value="Done">Done</option>
-            </DropdownInput>
-          </div>
+              <div className={styles["status"]}>
+                <span className={styles["inline-text"]}>Sorted in:</span>
+                <DropdownInput
+                  className={styles["select-list"]}
+                  dropdownInput={{
+                    id: styles["modal-select-field"],
+                    value: updatedState.enteredStatus,
+                    onChange: statusChangeHandler,
+                  }}
+                >
+                  <option value="To do">To do</option>
+                  <option value="In progress">In progress</option>
+                  <option value="Done">Done</option>
+                </DropdownInput>
+              </div>
 
-          <label htmlFor="textarea">
-            <FontAwesomeIcon
-              icon={faPenToSquare}
-              style={{
-                color: `${isToggle === true ? "#c78437" : "#2f2e41"}`,
-                padding: " 0px 10px 0px 0px",
-              }}
-            />
-            Description
-          </label>
-          <Textarea
-            className={styles["modal-description"]}
-            textarea={{
-              rows: "10",
-              id: styles.textarea,
-              value: updatedState.enteredDescription,
-              onChange: descriptionChangeHandler,
-            }}
-          ></Textarea>
-
-          <div className={styles["priority"]}>
-            <label id={styles["checkbox"]}>
-              <Input
-                input={{
-                  type: "checkbox",
-                  id: styles["checkbox-id"],
-                  value: updatedState.isChecked ? "Not-important" : "Important",
-                  onChange: checkboxHandler,
-                  checked: updatedState.isChecked,
+              <label htmlFor="textarea">
+                <FontAwesomeIcon
+                  icon={faPenToSquare}
+                  style={{
+                    color: `${isToggle === true ? "#c78437" : "#2f2e41"}`,
+                    padding: " 0px 10px 0px 0px",
+                  }}
+                />
+                Description
+              </label>
+              <Textarea
+                className={styles["modal-description"]}
+                textarea={{
+                  rows: "10",
+                  id: styles.textarea,
+                  value: updatedState.enteredDescription,
+                  onChange: descriptionChangeHandler,
                 }}
-              />
-              Priority
-            </label>
-          </div>
+              ></Textarea>
 
-          <div className={styles["create-date"]}>
-            <label>{`CreatedOn: ${updatedState.createdOn}`}</label>
-          </div>
+              <div className={styles["priority"]}>
+                <label id={styles["checkbox"]}>
+                  <Input
+                    input={{
+                      type: "checkbox",
+                      id: styles["checkbox-id"],
+                      value: updatedState.isChecked
+                        ? "Not-important"
+                        : "Important",
+                      onChange: checkboxHandler,
+                      checked: updatedState.isChecked,
+                    }}
+                  />
+                  Priority
+                </label>
+              </div>
 
-          <div className={styles["calendar"]}>
-            <FontAwesomeIcon
-              icon={faCalendarDays}
-              style={{
-                color: `${isToggle === true ? "#c78437" : "#2f2e41"}`,
-                padding: " 0px 10px 0px 0px",
-              }}
-            />
-            <Input
-              className={`${
-                isToggle === true ? styles["orange-icon"] : styles["modal-date"]
-              }`}
-              input={{
-                type: "date",
-                id: styles["modal-due-date"],
-                value: updatedState.enteredDueDate,
-                onChange: dueDateHandler,
-              }}
-            />
-          </div>
+              <div className={styles["create-date"]}>
+                <label>{`CreatedOn: ${updatedState.createdOn}`}</label>
+              </div>
 
-          <div>
-            <Button
-              button={{ onClick: props.onRemoveModal }}
-              className={styles["cancel-btn"]}
-            ></Button>
-            <Button
-              className={styles["update-btn"]}
-              button={{ type: "submit" }}
-            >
-              Update task
-            </Button>
-            <Button
-              className={styles["delete-btn"]}
-              button={{
-                onClick: onDeleteTask,
-              }}
-            >
-              Delete
-            </Button>
+              <div className={styles["calendar"]}>
+                <FontAwesomeIcon
+                  icon={faCalendarDays}
+                  style={{
+                    color: `${isToggle === true ? "#c78437" : "#2f2e41"}`,
+                    padding: " 0px 10px 0px 0px",
+                  }}
+                />
+                <Input
+                  className={`${
+                    isToggle === true
+                      ? styles["orange-icon"]
+                      : styles["modal-date"]
+                  }`}
+                  input={{
+                    type: "date",
+                    id: styles["modal-due-date"],
+                    value: updatedState.enteredDueDate,
+                    onChange: dueDateHandler,
+                  }}
+                />
+              </div>
+
+              <div>
+                <Button
+                  button={{ onClick: props.onRemoveModal }}
+                  className={styles["cancel-btn"]}
+                ></Button>
+                <Button
+                  className={styles["update-btn"]}
+                  button={{ type: "submit" }}
+                >
+                  Update task
+                </Button>
+                <Button
+                  className={styles["delete-btn"]}
+                  button={{
+                    onClick: onDeleteTask,
+                  }}
+                >
+                  Delete
+                </Button>
+              </div>
+            </form>
           </div>
-        </form>
-      </div>
-    </CSSTransition>
+        </CSSTransition>
+      )}
+      {error &&
+        ReactDOM.createPortal(
+          <ErrorModal onClose={clearError}>{error}</ErrorModal>,
+          document.getElementById("confirm-modal")
+        )}
+    </>
   );
 };
 

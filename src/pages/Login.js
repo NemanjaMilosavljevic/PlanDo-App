@@ -30,6 +30,8 @@ const Login = () => {
     loginFormIsValid,
   } = auth;
 
+  console.log(auth);
+
   const emailInputHandler = (event) => {
     dispatch(authActions.emailInput(event.target.value));
     dispatch(authActions.isEmailValid());

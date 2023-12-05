@@ -12,6 +12,7 @@
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center left;
+  scroll-behavior: smooth;
 }
 
 .dark {
@@ -28,6 +29,7 @@
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center left;
+  scroll-behavior: smooth;
 }
 
 .kanban-heading {

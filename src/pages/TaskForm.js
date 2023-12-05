@@ -13,6 +13,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { tasksActions, CreateTask } from "../store/tasks-slice";
 
 const TaskForm = () => {
+  const userId = localStorage.getItem("localId");
   const { isLoading, error, sendRequest, clearError } = useHttp();
   const dispatch = useDispatch();
   const tasks = useSelector((state) => state.tasks);
@@ -82,7 +83,7 @@ const TaskForm = () => {
       }),
     };
 
-    dispatch(CreateTask(taskData, sendRequest));
+    dispatch(CreateTask(taskData, sendRequest, userId));
 
     setEnteredTitle("");
     setEnteredDescription("");

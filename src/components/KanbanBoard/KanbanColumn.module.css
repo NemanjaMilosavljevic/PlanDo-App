@@ -6,6 +6,7 @@
   padding-right: 20px;
   border: 0.5px solid var(--border);
   background-color: var(--background-kanban-column-color);
+  scroll-behavior: smooth;
 }
 
 .heading {

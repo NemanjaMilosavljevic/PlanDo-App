@@ -1,28 +1,36 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./Kanban.module.css";
 import KanbanColumn from "../components/KanbanBoard/KanbanColumn";
 import ModalItem from "../components/KanbanBoard/ModalItem";
 import ColumnItem from "../components/KanbanBoard/ColumnItem";
-import DragAndDropContext from "../contextAPI/dnd-context";
 import { SortableContext } from "@dnd-kit/sortable";
-import { DndContext, DragOverlay } from "@dnd-kit/core";
+import {
+  DndContext,
+  DragOverlay,
+  PointerSensor,
+  useSensor,
+  useSensors,
+} from "@dnd-kit/core";
 import ReactDOM from "react-dom";
 import ErrorModal from "../components/UI/ErrorModal";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { dndActions, DragOver } from "../store/dnd-slice";
 import useHttp from "../hooks/use-http";
 
 const Kanban = React.memo(() => {
-  const { error, clearError } = useHttp();
+  const { error, clearError, sendRequest } = useHttp();
   const isToggle = useSelector((state) => state.theme.switchIsToggle);
-  const initialTasks = useSelector((state) => state.tasks.initialTasks);
+  const dispatch = useDispatch();
+  const tasks = useSelector((state) => state.tasks);
+  const { initialTasks, isModifiedTask } = tasks;
+  const dnd = useSelector((state) => state.dnd);
+  const { firstColId, secondColId, thirdColId, activeItem } = dnd;
 
   const columnInfo = [
     { heading: "TO DO", columnId: "To do" },
     { heading: "IN PROGRESS", columnId: "In progress" },
     { heading: "DONE", columnId: "Done" },
   ];
-
-  const ctxDnd = useContext(DragAndDropContext);
 
   const showScroll = () => {
     document.body.style.overflow = "visible";
@@ -73,6 +81,38 @@ const Kanban = React.memo(() => {
     }
   }, [showModal]);
 
+  //DND
+
+  const onDragStart = (event) => {
+    if (event.active.data.current?.type === "item") {
+      dispatch(dndActions.setActiveItem(event.active.data.current.task));
+      return;
+    }
+  };
+
+  const onDragOver = ({ active, over }) => {
+    dispatch(DragOver(active, over, sendRequest, initialTasks));
+  };
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 3,
+      },
+    })
+  );
+
+  useEffect(() => {
+    if (isModifiedTask) {
+      dispatch(dndActions.setFirstColId(initialTasks));
+      dispatch(dndActions.setSecondColId(initialTasks));
+      dispatch(dndActions.setThirdColId(initialTasks));
+    }
+    dispatch(dndActions.setFirstColId(initialTasks));
+    dispatch(dndActions.setSecondColId(initialTasks));
+    dispatch(dndActions.setThirdColId(initialTasks));
+  }, [dispatch, initialTasks, isModifiedTask]);
+
   return (
     <div
       className={`${styles.kanban} ${
@@ -84,13 +124,13 @@ const Kanban = React.memo(() => {
         <h4 className={styles["sub-heading"]}>- A place for your tasks</h4>
       </div>
       <DndContext
-        onDragStart={ctxDnd.onDragStart}
-        onDragOver={ctxDnd.onDragOver}
-        sensors={ctxDnd.sensors}
+        onDragStart={onDragStart}
+        onDragOver={onDragOver}
+        sensors={sensors}
       >
-        <SortableContext items={ctxDnd.firstColId}>
-          <SortableContext items={ctxDnd.thirdColId}>
-            <SortableContext items={ctxDnd.secondColId}>
+        <SortableContext items={firstColId}>
+          <SortableContext items={secondColId}>
+            <SortableContext items={thirdColId}>
               <KanbanColumn
                 setHeadings={columnInfo[0].heading}
                 key={columnInfo[0].columnId}
@@ -116,20 +156,20 @@ const Kanban = React.memo(() => {
         </SortableContext>
         {ReactDOM.createPortal(
           <DragOverlay>
-            {ctxDnd.activeItem && (
+            {activeItem && (
               <ColumnItem
-                key={ctxDnd.activeItem[0].id}
-                id={ctxDnd.activeItem[0].id}
-                title={ctxDnd.activeItem[0].title}
-                priority={ctxDnd.activeItem[0].priority}
-                due={ctxDnd.activeItem[0].due.toLocaleString("en-US", {
+                key={activeItem[0]?.id}
+                id={activeItem[0]?.id}
+                title={activeItem[0]?.title}
+                priority={activeItem[0]?.priority}
+                due={activeItem[0]?.due.toLocaleString("en-US", {
                   month: "long",
                   day: "2-digit",
                   year: "numeric",
                 })}
-                status={ctxDnd.activeItem[0].status}
-                description={ctxDnd.activeItem[0].description}
-                visibleId={ctxDnd.activeItem[0].visibleId}
+                status={activeItem[0]?.status}
+                description={activeItem[0]?.description}
+                visibleId={activeItem[0]?.visibleId}
               />
             )}
           </DragOverlay>,
@@ -138,9 +178,6 @@ const Kanban = React.memo(() => {
       </DndContext>
       {!showModal && error && (
         <ErrorModal onClose={clearError}>{error}</ErrorModal>
-      )}
-      {!showModal && ctxDnd.error && (
-        <ErrorModal onClose={ctxDnd.clearError}>{ctxDnd.error}</ErrorModal>
       )}
       {showModal && (
         <ModalItem

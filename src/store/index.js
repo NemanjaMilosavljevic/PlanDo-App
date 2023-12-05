@@ -4,6 +4,7 @@ import navbarSlice from "./navbar-slice";
 import authSlice from "./auth-slice";
 import tasksSlice from "./tasks-slice";
 import chartSlice from "./chart-slice";
+import dndSlice from "./dnd-slice";
 
 const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ const store = configureStore({
     auth: authSlice,
     tasks: tasksSlice,
     chart: chartSlice,
+    dnd: dndSlice,
   },
 });
 
