@@ -29,7 +29,7 @@ const PageNotFound = () => {
       <p className={styles.text}>Page Not Found!</p>
       <Ilustration
         className={`${classes["ilustration-page-not-found"]}  ${
-          isToggle === true ? classes["dark"] : ""
+          isToggle ? classes["dark"] : ""
         }`}
       ></Ilustration>
       <Button

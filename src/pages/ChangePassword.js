@@ -17,9 +17,11 @@ const ChangePassword = () => {
   const {
     newPasswordInputIsInvalid,
     enteredNewPassword,
-    changePasswordFormIsValid,
+    enteredNewPasswordIsValid,
     token,
   } = auth;
+
+  const changePasswordFormIsValid = enteredNewPasswordIsValid;
 
   const newPasswordInputHandler = (event) => {
     dispatch(authActions.newPasswordInput(event.target.value));
@@ -35,7 +37,6 @@ const ChangePassword = () => {
     event.preventDefault();
 
     dispatch(authActions.newPasswordInputBlur());
-    dispatch(authActions.isChangePasswordFormValid());
 
     if (!changePasswordFormIsValid) {
       return;

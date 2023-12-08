@@ -5,6 +5,8 @@ import authSlice from "./auth-slice";
 import tasksSlice from "./tasks-slice";
 import chartSlice from "./chart-slice";
 import dndSlice from "./dnd-slice";
+import taskFormSlice from "./taskForm-slice";
+import modalSlice from "./modal-slice";
 
 const store = configureStore({
   reducer: {
@@ -14,6 +16,8 @@ const store = configureStore({
     tasks: tasksSlice,
     chart: chartSlice,
     dnd: dndSlice,
+    taskForm: taskFormSlice,
+    modal: modalSlice,
   },
 });
 

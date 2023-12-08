@@ -9,8 +9,6 @@ const initialState = {
   thirdColId: [],
 };
 
-const userId = localStorage.getItem("localId");
-
 const dndSlice = createSlice({
   name: "dnd",
   initialState,
@@ -39,7 +37,7 @@ const dndSlice = createSlice({
   },
 });
 
-export const DragOver = (active, over, sendRequest, initialTasks) => {
+export const DragOver = (active, over, sendRequest, initialTasks, userId) => {
   return (dispatch) => {
     if (!over) return;
 
@@ -76,7 +74,7 @@ export const DragOver = (active, over, sendRequest, initialTasks) => {
 
       updatedArray = arrayMove(updatedInitialTasks, activeIndex, overIndex);
 
-      dispatch(DndRequestHandler(sendRequest, updatedArray));
+      dispatch(DndRequestHandler(sendRequest, updatedArray, userId));
     }
 
     //Dropping task over a column
@@ -100,12 +98,12 @@ export const DragOver = (active, over, sendRequest, initialTasks) => {
 
       updatedArray = arrayMove(updatedInitialTasks, activeIndex, activeIndex);
 
-      dispatch(DndRequestHandler(sendRequest, updatedArray));
+      dispatch(DndRequestHandler(sendRequest, updatedArray, userId));
     }
   };
 };
 
-export const DndRequestHandler = (sendRequest, updatedArray) => {
+export const DndRequestHandler = (sendRequest, updatedArray, userId) => {
   return async (dispatch) => {
     dispatch(tasksActions.isTaskNotUpdated());
 

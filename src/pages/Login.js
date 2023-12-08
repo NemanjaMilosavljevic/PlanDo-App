@@ -15,7 +15,8 @@ import {
 } from "../store/auth-slice";
 
 const Login = () => {
-  let tokenData = retrieveStoredToken();
+  const tokenData = retrieveStoredToken();
+
   const { sendRequest, isLoading, error, clearError } = useHttp();
   const navigate = useNavigate();
 
@@ -27,10 +28,11 @@ const Login = () => {
     emailInputIsInvalid,
     passwordInputIsInvalid,
     isLogin,
-    loginFormIsValid,
+    enteredPasswordIsValid,
+    enteredEmailIsValid,
   } = auth;
 
-  console.log(auth);
+  const loginFormIsValid = enteredPasswordIsValid && enteredEmailIsValid;
 
   const emailInputHandler = (event) => {
     dispatch(authActions.emailInput(event.target.value));
@@ -54,6 +56,7 @@ const Login = () => {
 
   const switchAuthModeHandler = () => {
     dispatch(authActions.switchAuthMode());
+    dispatch(authActions.resetInputState());
   };
 
   const loginHandlerFunction = (event) => {
@@ -61,7 +64,6 @@ const Login = () => {
 
     dispatch(authActions.emailInputBlur());
     dispatch(authActions.passwordInputBlur());
-    dispatch(authActions.isLoginFormValid());
 
     if (!loginFormIsValid) {
       return;
@@ -73,7 +75,7 @@ const Login = () => {
       returnSecureToken: true,
     };
 
-    dispatch(loginHandler(userCredentials, sendRequest, auth, navigate));
+    dispatch(loginHandler(userCredentials, sendRequest, isLogin, navigate));
   };
 
   useEffect(() => {
@@ -107,9 +109,7 @@ const Login = () => {
       {!isLoading && (
         <div className={styles.wrapper}>
           <img src="Images/logo_text.png" alt="Sign In logo" />
-          <p className={styles["heading"]}>
-            {!auth.isLogin ? "Sign Up" : "Login"}
-          </p>
+          <p className={styles["heading"]}>{!isLogin ? "Sign Up" : "Login"}</p>
           <form onSubmit={loginHandlerFunction}>
             {emailInputIsInvalid && (
               <p className="invalid-input">*Email is invalid!</p>

@@ -1,13 +1,14 @@
 import styles from "./Button.module.css";
+import React from "react";
 
-const Button = (props) => {
-  let classes = `${styles.button} ${props.className}`;
+const Button = ({ children, className, disabled, button }) => {
+  let classes = `${styles.button} ${className}`;
 
   return (
-    <button className={classes} {...props.button} disabled={props.disabled}>
-      {props.children}
+    <button className={classes} {...button} disabled={disabled}>
+      {children}
     </button>
   );
 };
 
-export default Button;
+export default React.memo(Button);

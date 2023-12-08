@@ -1,6 +1,5 @@
 import styles from "./ModalOverlay.module.css";
 import ReactDOM from "react-dom";
-import { useReducer } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare } from "@fortawesome/free-regular-svg-icons";
 import { faCalendarDays } from "@fortawesome/free-solid-svg-icons";
@@ -12,199 +11,74 @@ import ErrorModal from "./ErrorModal";
 import { useSelector, useDispatch } from "react-redux";
 import { UpdateTask, deleteTaskHandler } from "../../store/tasks-slice";
 import useHttp from "../../hooks/use-http";
-
 import CSSTransition from "react-transition-group/CSSTransition";
+import { modalSliceActions } from "../../store/modal-slice";
 
-const ModalOverlay = (props) => {
+const ModalOverlay = ({ onRemoveModal, className }) => {
   const userId = localStorage.getItem("localId");
+
   const dispatch = useDispatch();
   const initialTasks = useSelector((state) => state.tasks.initialTasks);
   const { error, clearError, sendRequest } = useHttp();
 
   const isToggle = useSelector((state) => state.theme.switchIsToggle);
-
-  const createUTCdateToISO = (dateString) => {
-    const offset = new Date().getTimezoneOffset();
-    const myDate = Date.parse(dateString) - offset * 60 * 1000;
-    return new Date(myDate).toISOString().slice(0, 10);
-  };
-
-  const initialTaskState = {
-    enteredTitle: props.onFilter.title,
-    enteredDescription: props.onFilter.description,
-    chosenPriority: props.onFilter.priority,
-    enteredDueDate: createUTCdateToISO(props.onFilter.due),
-    enteredStatus: props.onFilter.status,
-    visibleId: props.onFilter.visibleId,
-    id: props.onFilter.id,
-    isChecked: props.onFilter.priority === "Important" ? true : false,
-    createdOn: props.onFilter.createdOn,
-    firebaseId: props.onFilter.firebaseId,
-  };
-
-  const updateReducer = (state, action) => {
-    if (action.type === "title") {
-      return {
-        enteredTitle: action.titleValue,
-        enteredDescription: state.enteredDescription,
-        chosenPriority: state.chosenPriority,
-        enteredDueDate: state.enteredDueDate,
-        enteredStatus: state.enteredStatus,
-        visibleId: props.onFilter.visibleId,
-        id: props.onFilter.id,
-        isChecked:
-          state.chosenPriority === "Important" &&
-          action.priorityValue === undefined
-            ? true
-            : false,
-        createdOn: props.onFilter.createdOn,
-        firebaseId: props.onFilter.firebaseId,
-      };
-    }
-    if (action.type === "description") {
-      return {
-        enteredTitle: state.enteredTitle,
-        enteredDescription: action.descriptionValue,
-        chosenPriority: state.chosenPriority,
-        enteredDueDate: state.enteredDueDate,
-        enteredStatus: state.enteredStatus,
-        visibleId: props.onFilter.visibleId,
-        id: props.onFilter.id,
-        isChecked:
-          state.chosenPriority === "Important" &&
-          action.priorityValue === undefined
-            ? true
-            : false,
-        createdOn: props.onFilter.createdOn,
-        firebaseId: props.onFilter.firebaseId,
-      };
-    }
-
-    if (action.type === "priority") {
-      return {
-        enteredTitle: state.enteredTitle,
-        enteredDescription: state.enteredDescription,
-        chosenPriority: action.priorityValue,
-        enteredDueDate: state.enteredDueDate,
-        enteredStatus: state.enteredStatus,
-        visibleId: props.onFilter.visibleId,
-        id: props.onFilter.id,
-        isChecked:
-          action.priorityValue === "Important" ||
-          (state.chosenPriority === "Important" &&
-            action.priorityValue === undefined)
-            ? true
-            : false,
-        createdOn: props.onFilter.createdOn,
-        firebaseId: props.onFilter.firebaseId,
-      };
-    }
-
-    if (action.type === "due") {
-      return {
-        enteredTitle: state.enteredTitle,
-        enteredDescription: state.enteredDescription,
-        chosenPriority: state.chosenPriority,
-        enteredDueDate: action.dueValue,
-        enteredStatus: state.enteredStatus,
-        visibleId: props.onFilter.visibleId,
-        id: props.onFilter.id,
-        isChecked:
-          state.chosenPriority === "Important" &&
-          action.priorityValue === undefined
-            ? true
-            : false,
-        createdOn: props.onFilter.createdOn,
-        firebaseId: props.onFilter.firebaseId,
-      };
-    }
-
-    if (action.type === "status") {
-      return {
-        enteredTitle: state.enteredTitle,
-        enteredDescription: state.enteredDescription,
-        chosenPriority: state.chosenPriority,
-        enteredDueDate: state.enteredDueDate,
-        enteredStatus: action.statusValue || state.enteredStatus,
-        visibleId: props.onFilter.visibleId,
-        id: props.onFilter.id,
-        isChecked:
-          state.chosenPriority === "Important" &&
-          action.priorityValue === undefined
-            ? true
-            : false,
-        createdOn: props.onFilter.createdOn,
-        firebaseId: props.onFilter.firebaseId,
-      };
-    }
-
-    return initialTaskState;
-  };
-
-  const [updatedState, dispatchUpdate] = useReducer(
-    updateReducer,
-    initialTaskState
-  );
+  const modal = useSelector((state) => state.modal);
+  const {
+    enteredTitle,
+    enteredDescription,
+    chosenPriority,
+    enteredDueDate,
+    enteredStatus,
+    visibleId,
+    id,
+    isChecked,
+    createdOn,
+    firebaseId,
+    modalIsActive,
+  } = modal;
 
   const titleChangeHandler = (event) => {
-    dispatchUpdate({
-      type: "title",
-      titleValue: event.target.value,
-    });
+    dispatch(modalSliceActions.getTitle(event.target.value));
   };
 
   const descriptionChangeHandler = (event) => {
-    dispatchUpdate({
-      type: "description",
-      descriptionValue: event.target.value,
-    });
+    dispatch(modalSliceActions.getDescription(event.target.value));
   };
 
   const checkboxHandler = (event) => {
-    dispatchUpdate({
-      type: "priority",
-      priorityValue: event.target.value,
-    });
+    dispatch(modalSliceActions.getPriority(event.target.value));
+    dispatch(modalSliceActions.getIsChecked(event.target.value));
   };
 
   const dueDateHandler = (event) => {
-    dispatchUpdate({
-      type: "due",
-      dueValue: event.target.value,
-    });
+    dispatch(modalSliceActions.getDueDate(event.target.value));
   };
 
   const statusChangeHandler = (event) => {
-    dispatchUpdate({ type: "status", statusValue: event.target.value });
+    dispatch(modalSliceActions.getStatus(event.target.value));
   };
 
   const updateTaskHandler = (event) => {
     event.preventDefault();
 
     const updatedTask = {
-      title: updatedState.enteredTitle,
-      description: updatedState.enteredDescription,
-      priority: updatedState.chosenPriority,
-      due: new Date(updatedState.enteredDueDate).toLocaleString("en-US", {
+      title: enteredTitle,
+      description: enteredDescription,
+      priority: chosenPriority,
+      due: new Date(enteredDueDate).toLocaleString("en-US", {
         month: "long",
         day: "2-digit",
         year: "numeric",
       }),
-      status: updatedState.enteredStatus,
-      id: updatedState.id,
-      visibleId: updatedState.visibleId,
-      createdOn: updatedState.createdOn,
-      firebaseId: updatedState.firebaseId,
+      status: enteredStatus,
+      id: id,
+      visibleId: visibleId,
+      createdOn: createdOn,
+      firebaseId: firebaseId,
     };
 
     dispatch(
-      UpdateTask(
-        updatedTask,
-        sendRequest,
-        initialTasks,
-        userId,
-        props.onRemoveModal
-      )
+      UpdateTask(updatedTask, sendRequest, initialTasks, userId, onRemoveModal)
     );
   };
 
@@ -212,19 +86,19 @@ const ModalOverlay = (props) => {
     event.preventDefault();
 
     const deletedTask = {
-      title: updatedState.enteredTitle,
-      description: updatedState.enteredDescription,
-      priority: updatedState.chosenPriority,
-      due: new Date(updatedState.enteredDueDate).toLocaleString("en-US", {
+      title: enteredTitle,
+      description: enteredDescription,
+      priority: chosenPriority,
+      due: new Date(enteredDueDate).toLocaleString("en-US", {
         month: "long",
         day: "2-digit",
         year: "numeric",
       }),
-      status: updatedState.enteredStatus,
-      id: updatedState.id,
-      visibleId: updatedState.visibleId,
-      createdOn: updatedState.createdOn,
-      firebaseId: updatedState.firebaseId,
+      status: enteredStatus,
+      id: id,
+      visibleId: visibleId,
+      createdOn: createdOn,
+      firebaseId: firebaseId,
     };
 
     dispatch(
@@ -233,19 +107,19 @@ const ModalOverlay = (props) => {
         sendRequest,
         initialTasks,
         userId,
-        props.onRemoveModal
+        onRemoveModal
       )
     );
   };
 
-  let classes = `${styles["modal-container"]} ${props.className}`;
+  let classes = `${styles["modal-container"]} ${className}`;
 
   return (
     <>
       {!error && (
         <CSSTransition
           timeout={600}
-          in={props.modalIsActive}
+          in={modalIsActive}
           mountOnEnter
           unmountOnExit
           classNames={{
@@ -258,15 +132,13 @@ const ModalOverlay = (props) => {
           <div className={classes}>
             <form onSubmit={updateTaskHandler} className={styles["modal-form"]}>
               <div className={styles["modal-heading"]}>
-                <span className={styles["visible-id"]}>
-                  {updatedState.visibleId}
-                </span>
+                <span className={styles["visible-id"]}>{visibleId}</span>
                 <Textarea
                   textarea={{
                     type: "textarea",
                     rows: "2",
                     id: styles["modal-title"],
-                    value: updatedState.enteredTitle,
+                    value: enteredTitle,
                     onChange: titleChangeHandler,
                   }}
                 />
@@ -278,7 +150,7 @@ const ModalOverlay = (props) => {
                   className={styles["select-list"]}
                   dropdownInput={{
                     id: styles["modal-select-field"],
-                    value: updatedState.enteredStatus,
+                    value: enteredStatus,
                     onChange: statusChangeHandler,
                   }}
                 >
@@ -292,7 +164,7 @@ const ModalOverlay = (props) => {
                 <FontAwesomeIcon
                   icon={faPenToSquare}
                   style={{
-                    color: `${isToggle === true ? "#c78437" : "#2f2e41"}`,
+                    color: `${isToggle ? "#c78437" : "#2f2e41"}`,
                     padding: " 0px 10px 0px 0px",
                   }}
                 />
@@ -303,7 +175,7 @@ const ModalOverlay = (props) => {
                 textarea={{
                   rows: "10",
                   id: styles.textarea,
-                  value: updatedState.enteredDescription,
+                  value: enteredDescription,
                   onChange: descriptionChangeHandler,
                 }}
               ></Textarea>
@@ -314,11 +186,9 @@ const ModalOverlay = (props) => {
                     input={{
                       type: "checkbox",
                       id: styles["checkbox-id"],
-                      value: updatedState.isChecked
-                        ? "Not-important"
-                        : "Important",
+                      value: isChecked ? "Not-important" : "Important",
                       onChange: checkboxHandler,
-                      checked: updatedState.isChecked,
+                      checked: isChecked,
                     }}
                   />
                   Priority
@@ -326,27 +196,25 @@ const ModalOverlay = (props) => {
               </div>
 
               <div className={styles["create-date"]}>
-                <label>{`CreatedOn: ${updatedState.createdOn}`}</label>
+                <label>{`CreatedOn: ${createdOn}`}</label>
               </div>
 
               <div className={styles["calendar"]}>
                 <FontAwesomeIcon
                   icon={faCalendarDays}
                   style={{
-                    color: `${isToggle === true ? "#c78437" : "#2f2e41"}`,
+                    color: `${isToggle ? "#c78437" : "#2f2e41"}`,
                     padding: " 0px 10px 0px 0px",
                   }}
                 />
                 <Input
                   className={`${
-                    isToggle === true
-                      ? styles["orange-icon"]
-                      : styles["modal-date"]
+                    isToggle ? styles["orange-icon"] : styles["modal-date"]
                   }`}
                   input={{
                     type: "date",
                     id: styles["modal-due-date"],
-                    value: updatedState.enteredDueDate,
+                    value: enteredDueDate,
                     onChange: dueDateHandler,
                   }}
                 />
@@ -354,7 +222,7 @@ const ModalOverlay = (props) => {
 
               <div>
                 <Button
-                  button={{ onClick: props.onRemoveModal }}
+                  button={{ onClick: onRemoveModal }}
                   className={styles["cancel-btn"]}
                 ></Button>
                 <Button

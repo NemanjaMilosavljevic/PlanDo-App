@@ -2,22 +2,15 @@ import ReactDOM from "react-dom";
 import ModalOverlay from "../UI/ModalOverlay";
 import Backdrop from "../UI/Backdrop";
 
-const ModalItem = (props) => {
+const ModalItem = ({ onRemoveModal }) => {
   return (
     <>
       {ReactDOM.createPortal(
-        <Backdrop
-          removeModal={props.onRemoveModal}
-          showModal={props.showModal}
-        />,
+        <Backdrop removeModal={onRemoveModal} />,
         document.getElementById("modal-overlay")
       )}
       {ReactDOM.createPortal(
-        <ModalOverlay
-          onFilter={props.onFilter}
-          onRemoveModal={props.onRemoveModal}
-          modalIsActive={props.modalIsActive}
-        />,
+        <ModalOverlay onRemoveModal={onRemoveModal} />,
         document.getElementById("modal-overlay")
       )}
     </>

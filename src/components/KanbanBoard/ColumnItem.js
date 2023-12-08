@@ -6,9 +6,11 @@ import { CSS } from "@dnd-kit/utilities";
 import { useSortable } from "@dnd-kit/sortable";
 import { useSelector } from "react-redux";
 
-const ColumnItem = (props) => {
+const ColumnItem = ({ id, title, due, visibleId, priority, showModal }) => {
   const isToggle = useSelector((state) => state.theme.switchIsToggle);
   const initialTasks = useSelector((state) => state.tasks.initialTasks);
+
+  const filteredTask = initialTasks.filter((task) => task.id === id);
 
   const {
     setNodeRef,
@@ -18,10 +20,10 @@ const ColumnItem = (props) => {
     transform,
     isDragging,
   } = useSortable({
-    id: props.id,
+    id: id,
     data: {
       type: "item",
-      task: initialTasks.filter((task) => task.id === props.id),
+      task: filteredTask,
     },
   });
 
@@ -33,29 +35,29 @@ const ColumnItem = (props) => {
   if (isDragging) {
     return (
       <div ref={setNodeRef} style={style} className={styles["drag-card"]}>
-        <h4 className={styles["title-heading"]}>{props.title}</h4>
+        <h4 className={styles["title-heading"]}>{title}</h4>
         <p className={styles["due-item"]}>
           <FontAwesomeIcon
             icon={faClock}
             style={{
-              color: `${isToggle === true ? "#c78437" : "#222"}`,
+              color: `${isToggle ? "#c78437" : "#222"}`,
               padding: "0px 5px 0px 0px",
             }}
           />
-          {props.due}
+          {due}
         </p>
         <span className={styles["id-item"]}>
           <FontAwesomeIcon
             icon={faThumbtack}
             style={{ color: "#222", padding: "0px 5px 0px 2px" }}
           />
-          {props.visibleId}
+          {visibleId}
         </span>
         <span className={styles["flag"]}>
           <FontAwesomeIcon
             icon={faFlag}
             style={{
-              color: `${props.priority === "Important" ? "#c78437" : "#ccc"}`,
+              color: `${priority === "Important" ? "#c78437" : "#ccc"}`,
             }}
           />
         </span>
@@ -66,35 +68,35 @@ const ColumnItem = (props) => {
   return (
     <div
       className={styles["card"]}
-      onClick={props.showModal}
+      onClick={showModal}
       ref={setNodeRef}
       style={style}
       {...attributes}
       {...listeners}
     >
-      <h4 className={styles["title-heading"]}>{props.title}</h4>
+      <h4 className={styles["title-heading"]}>{title}</h4>
       <p className={styles["due-item"]}>
         <FontAwesomeIcon
           icon={faClock}
           style={{
-            color: `${isToggle === true ? "#c78437" : "#222"}`,
+            color: `${isToggle ? "#c78437" : "#222"}`,
             padding: "0px 5px 0px 0px",
           }}
         />
-        {props.due}
+        {due}
       </p>
       <span className={styles["id-item"]}>
         <FontAwesomeIcon
           icon={faThumbtack}
           style={{ color: "#222", padding: "0px 5px 0px 2px" }}
         />
-        {props.visibleId}
+        {visibleId}
       </span>
       <span className={styles["flag"]}>
         <FontAwesomeIcon
           icon={faFlag}
           style={{
-            color: `${props.priority === "Important" ? "#c78437" : "#ccc"}`,
+            color: `${priority === "Important" ? "#c78437" : "#ccc"}`,
           }}
         />
       </span>

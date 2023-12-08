@@ -1,6 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const APIKEY = "AIzaSyAdtDga0Ku0CkUW_a_wCI8Y_B6OeDA3Tw4";
 let logoutTimer;
 
 //Auto logout whene token expires and retrieving stored token
@@ -63,8 +62,6 @@ const initialState = {
   passwordInputIsInvalid: false,
   enteredNewPasswordIsValid: false,
   newPasswordInputIsInvalid: false,
-  changePasswordFormIsValid: false,
-  loginFormIsValid: false,
 };
 
 const authSlice = createSlice({
@@ -86,14 +83,6 @@ const authSlice = createSlice({
       state.newPasswordInputIsInvalid =
         !state.enteredNewPasswordIsValid && state.newPasswordIsTouched;
     },
-    isChangePasswordFormValid(state) {
-      state.changePasswordFormIsValid = state.enteredNewPasswordIsValid;
-    },
-
-    isLoginFormValid(state) {
-      state.loginFormIsValid =
-        state.enteredPasswordIsValid && state.enteredEmailIsValid;
-    },
     emailInput(state, action) {
       state.enteredEmail = action.payload;
     },
@@ -105,12 +94,6 @@ const authSlice = createSlice({
     },
     switchAuthMode(state) {
       state.isLogin = !state.isLogin;
-      state.enteredEmail = "";
-      state.enteredPassword = "";
-      state.emailIsTouched = false;
-      state.passwordIsTouched = false;
-      state.emailInputIsInvalid = false;
-      state.passwordInputIsInvalid = false;
     },
     emailInputBlur(state) {
       state.emailIsTouched = true;
@@ -124,28 +107,27 @@ const authSlice = createSlice({
     newPasswordInputIsNotTouched(state) {
       state.newPasswordIsTouched = false;
     },
-    login(state, action) {
-      const token = action.payload;
-
-      state.token = token;
-      state.isUserLoggedIn = true;
+    resetInputState(state) {
       state.enteredEmail = "";
       state.enteredPassword = "";
+      state.enteredNewPassword = "";
       state.emailIsTouched = false;
       state.passwordIsTouched = false;
+      state.newPasswordIsTouched = false;
       state.emailInputIsInvalid = false;
       state.passwordInputIsInvalid = false;
       state.enteredEmailIsValid = false;
       state.enteredPasswordIsValid = false;
+      state.enteredNewPasswordIsValid = false;
+      state.newPasswordInputIsInvalid = false;
+    },
+    login(state, action) {
+      state.token = action.payload;
+      state.isUserLoggedIn = true;
     },
     logout(state) {
       state.token = null;
       state.isUserLoggedIn = false;
-      state.enteredEmail = "";
-      state.enteredPassword = "";
-      state.loginFormIsValid = false;
-      state.enteredEmailIsValid = false;
-      state.enteredPasswordIsValid = false;
     },
   },
 });
@@ -153,8 +135,8 @@ const authSlice = createSlice({
 // Handling login
 
 const authenticateUser = (navigate, dispatch, authData) => {
-  //
   dispatch(authActions.login(authData.idToken));
+  dispatch(authActions.resetInputState());
 
   // Setting timer for auto logout
   const expirationTime = new Date(
@@ -168,18 +150,24 @@ const authenticateUser = (navigate, dispatch, authData) => {
   localStorage.setItem("userEmail", authData.email);
   localStorage.setItem("localId", authData.localId);
   navigate({ pathname: "/home" });
+  window.location.reload();
 };
 
-export const loginHandler = (userCredentials, sendRequest, auth, navigate) => {
+export const loginHandler = (
+  userCredentials,
+  sendRequest,
+  isLogin,
+  navigate
+) => {
   return async (dispatch) => {
     let urlString;
 
-    if (auth.isLogin) {
+    if (isLogin) {
       // firebase endpoint for login existing user
-      urlString = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${APIKEY}`;
+      urlString = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${process.env.REACT_APP_API_KEY}`;
     } else {
       // firebase endpoint for signup new user
-      urlString = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${APIKEY}`;
+      urlString = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${process.env.REACT_APP_API_KEY}`;
     }
 
     sendRequest(
@@ -198,7 +186,8 @@ export const loginHandler = (userCredentials, sendRequest, auth, navigate) => {
 
 // Handling password change
 
-const authenticateChangePassword = (navigate) => {
+const authenticateChangePassword = (navigate, dispatch) => {
+  dispatch(authActions.resetInputState());
   alert("Succesfully changed password!");
   navigate({ pathname: "/home" });
 };
@@ -212,14 +201,14 @@ export const changePasswordHandler = (
     sendRequest(
       // firebase endpoint for changing password
       {
-        url: `https://identitytoolkit.googleapis.com/v1/accounts:update?key=${APIKEY}`,
+        url: `https://identitytoolkit.googleapis.com/v1/accounts:update?key=${process.env.REACT_APP_API_KEY}`,
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: newPasswordInfo,
       },
-      authenticateChangePassword.bind(null, navigate)
+      authenticateChangePassword.bind(null, navigate, dispatch)
     );
     dispatch(authActions.newPasswordInputIsNotTouched());
   };

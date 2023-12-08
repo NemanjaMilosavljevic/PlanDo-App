@@ -12,7 +12,7 @@ const AnalyticsCard = () => {
     <div className={styles["card-analitycs"]}>
       <div className={styles["inner-container"]}>
         <div className={styles["heading-analitycs"]}>
-          <h1>Analitycs</h1>
+          <h1>Analytics</h1>
           <h3>Keep tracking your progress</h3>
         </div>
         <FilterCard></FilterCard>
@@ -20,7 +20,7 @@ const AnalyticsCard = () => {
       </div>
       <Ilustration
         className={`${classes["ilustration-analitycs"]} ${
-          isToggle === true ? classes["dark"] : ""
+          isToggle ? classes["dark"] : ""
         }`}
       ></Ilustration>
     </div>

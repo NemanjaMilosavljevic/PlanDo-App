@@ -11,24 +11,30 @@ import React, { useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { navbarActions } from "../../store/navbar-slice";
-import { logoutHandler } from "../../store/auth-slice";
+import { authActions, logoutHandler } from "../../store/auth-slice";
+
+let userEmail;
 
 const Navbar = () => {
+  if (!userEmail) {
+    userEmail = localStorage.getItem("userEmail");
+  }
+
   const dispatch = useDispatch();
   const navbar = useSelector((state) => state.navbar);
   const { isShown, showAccountBar } = navbar;
-
-  const userEmail = localStorage.getItem("userEmail");
   const navigate = useNavigate();
   const accountRef = useRef();
 
   const changeAccountHandler = () => {
     dispatch(logoutHandler());
+    dispatch(authActions.resetInputState());
     navigate({ pathname: "/sign-in" });
   };
 
-  const signOut = () => {
+  const signOutHandler = () => {
     dispatch(logoutHandler());
+    dispatch(authActions.resetInputState());
   };
 
   const setNewPasswordHandler = (event) => {
@@ -88,7 +94,7 @@ const Navbar = () => {
                 color: "#000",
               }}
             />
-            {isShown && <span className={styles["span-text"]}>Analitycs</span>}
+            {isShown && <span className={styles["span-text"]}>Analytics</span>}
           </div>
         </Link>
 
@@ -116,7 +122,7 @@ const Navbar = () => {
           </div>
         </div>
 
-        <Link to="/sign-in" className={styles.link} onClick={signOut}>
+        <Link to="/sign-in" className={styles.link} onClick={signOutHandler}>
           <div className={styles.flexcont}>
             <FontAwesomeIcon
               icon={faArrowRightFromBracket}

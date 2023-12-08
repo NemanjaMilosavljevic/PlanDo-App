@@ -1,5 +1,5 @@
 import styles from "./TaskForm.module.css";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import ReactDOM from "react-dom";
 import Button from "../components/UI/Button";
 import Input from "../components/UI/Input";
@@ -11,26 +11,31 @@ import ErrorModal from "../components/UI/ErrorModal";
 import useHttp from "../hooks/use-http";
 import { useSelector, useDispatch } from "react-redux";
 import { tasksActions, CreateTask } from "../store/tasks-slice";
+import { taskFormActions } from "../store/taskForm-slice";
 
 const TaskForm = () => {
   const userId = localStorage.getItem("localId");
+
   const { isLoading, error, sendRequest, clearError } = useHttp();
   const dispatch = useDispatch();
   const tasks = useSelector((state) => state.tasks);
   const { initialTasks, confirmModalIsActive } = tasks;
 
-  const [enteredTitle, setEnteredTitle] = useState("");
-  const [enteredDescription, setEnteredDescription] = useState("");
-  const [chosenFlag, setChosenFlag] = useState("Not-important");
-  const [enteredDueDate, setEnteredDueDate] = useState("");
-  const [enteredStatus, setEnteredStatus] = useState("To do");
+  const taskForm = useSelector((state) => state.taskForm);
+  const {
+    enteredTitle,
+    enteredDescription,
+    chosenFlag,
+    enteredDueDate,
+    enteredStatus,
+  } = taskForm;
 
   const titleChangeHandler = (event) => {
-    setEnteredTitle(event.target.value);
+    dispatch(taskFormActions.setEnteredTitle(event.target.value));
   };
 
   const descriptionChangeHandler = (event) => {
-    setEnteredDescription(event.target.value);
+    dispatch(taskFormActions.setEnteredDescription(event.target.value));
   };
 
   const checkboxHandler = (event) => {
@@ -38,15 +43,16 @@ const TaskForm = () => {
     if (checkbox.checked) {
       checkbox.setAttribute("value", "Important");
     }
-    setChosenFlag(event.target.value);
+
+    dispatch(taskFormActions.setChosenFlag(event.target.value));
   };
 
   const dueDateHandler = (event) => {
-    setEnteredDueDate(event.target.value);
+    dispatch(taskFormActions.setEnteredDueDate(event.target.value));
   };
 
   const statusChangeHandler = (event) => {
-    setEnteredStatus(event.target.value);
+    dispatch(taskFormActions.setEnteredStatus(event.target.value));
   };
 
   const visibleIdHandler = () => {
@@ -59,6 +65,7 @@ const TaskForm = () => {
 
   const submitHandler = (event) => {
     event.preventDefault();
+
     let checkbox = document.getElementById("checkbox-id");
 
     const taskData = {
@@ -85,11 +92,16 @@ const TaskForm = () => {
 
     dispatch(CreateTask(taskData, sendRequest, userId));
 
-    setEnteredTitle("");
-    setEnteredDescription("");
-    setChosenFlag("Not-important");
-    setEnteredDueDate("");
-    setEnteredStatus("To do");
+    dispatch(
+      taskFormActions.setToInitialState({
+        enteredTitle: "",
+        enteredDescription: "",
+        chosenFlag: "Not-important",
+        enteredDueDate: "",
+        enteredStatus: "To do",
+      })
+    );
+
     checkbox.checked = false;
   };
 

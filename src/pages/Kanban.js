@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import styles from "./Kanban.module.css";
 import KanbanColumn from "../components/KanbanBoard/KanbanColumn";
 import ModalItem from "../components/KanbanBoard/ModalItem";
@@ -16,72 +16,62 @@ import ErrorModal from "../components/UI/ErrorModal";
 import { useSelector, useDispatch } from "react-redux";
 import { dndActions, DragOver } from "../store/dnd-slice";
 import useHttp from "../hooks/use-http";
+import { modalSliceActions } from "../store/modal-slice";
 
-const Kanban = React.memo(() => {
+let initialRender = true;
+
+const Kanban = () => {
+  const userId = localStorage.getItem("localId");
+
   const { error, clearError, sendRequest } = useHttp();
-  const isToggle = useSelector((state) => state.theme.switchIsToggle);
   const dispatch = useDispatch();
+  const isToggle = useSelector((state) => state.theme.switchIsToggle);
+
   const tasks = useSelector((state) => state.tasks);
   const { initialTasks, isModifiedTask } = tasks;
+
   const dnd = useSelector((state) => state.dnd);
   const { firstColId, secondColId, thirdColId, activeItem } = dnd;
 
-  const columnInfo = [
-    { heading: "TO DO", columnId: "To do" },
-    { heading: "IN PROGRESS", columnId: "In progress" },
-    { heading: "DONE", columnId: "Done" },
-  ];
+  const modal = useSelector((state) => state.modal);
+  const { isModalShown } = modal;
 
-  const showScroll = () => {
+  const columnInfo = useMemo(
+    () => [
+      { heading: "TO DO", columnId: "To do" },
+      { heading: "IN PROGRESS", columnId: "In progress" },
+      { heading: "DONE", columnId: "Done" },
+    ],
+    []
+  );
+
+  const showScroll = useCallback(() => {
     document.body.style.overflow = "visible";
-  };
+  }, []);
 
-  const hideScroll = () => {
+  const hideScroll = useCallback(() => {
     document.body.style.overflow = "hidden";
-  };
+  }, []);
 
-  const [toggleModal, setToggleModal] = useState({
-    showModal: false,
-    choosenTask: null,
-  });
-
-  const [modalIsActive, setModalIsActive] = useState(false);
-
-  const removeModalHandler = () => {
-    setModalIsActive(false);
+  const removeModalHandler = useCallback(() => {
+    dispatch(modalSliceActions.setModalToNotActive());
     setTimeout(() => {
-      setToggleModal({
-        showModal: false,
-        choosenTask: null,
-      });
+      dispatch(modalSliceActions.hideModal());
     }, 1000);
-  };
+  }, [dispatch]);
 
   const showModalHandler = (taskId) => {
-    let filteredItem = {};
-    for (const task of initialTasks) {
-      if (taskId === task.id) {
-        filteredItem = task;
-      }
-    }
-    setToggleModal((prevState) => {
-      return {
-        ...prevState,
-        showModal: !prevState.showModal,
-        choosenTask: filteredItem,
-      };
-    });
+    dispatch(modalSliceActions.getSelectedTask({ initialTasks, taskId }));
+    dispatch(modalSliceActions.toggleModal());
   };
 
-  const { showModal, choosenTask } = toggleModal;
-
   useEffect(() => {
-    if (showModal) {
-      setModalIsActive(true);
+    if (isModalShown) {
+      dispatch(modalSliceActions.setModalToActive());
     }
-  }, [showModal]);
+  }, [isModalShown, dispatch]);
 
-  //DND
+  //Drag and Drop
 
   const onDragStart = (event) => {
     if (event.active.data.current?.type === "item") {
@@ -91,7 +81,7 @@ const Kanban = React.memo(() => {
   };
 
   const onDragOver = ({ active, over }) => {
-    dispatch(DragOver(active, over, sendRequest, initialTasks));
+    dispatch(DragOver(active, over, sendRequest, initialTasks, userId));
   };
 
   const sensors = useSensors(
@@ -103,21 +93,19 @@ const Kanban = React.memo(() => {
   );
 
   useEffect(() => {
-    if (isModifiedTask) {
+    if (initialRender || isModifiedTask) {
+      initialRender = false;
       dispatch(dndActions.setFirstColId(initialTasks));
       dispatch(dndActions.setSecondColId(initialTasks));
       dispatch(dndActions.setThirdColId(initialTasks));
     }
-    dispatch(dndActions.setFirstColId(initialTasks));
-    dispatch(dndActions.setSecondColId(initialTasks));
-    dispatch(dndActions.setThirdColId(initialTasks));
   }, [dispatch, initialTasks, isModifiedTask]);
 
   return (
     <div
       className={`${styles.kanban} ${
-        showModal === true ? hideScroll() : showScroll()
-      } ${isToggle === true ? styles.dark : ""}`}
+        isModalShown ? hideScroll() : showScroll()
+      } ${isToggle ? styles.dark : ""}`}
     >
       <div className={styles["kanban-heading"]}>
         <h1 className={styles["main-heading"]}>Board </h1>
@@ -176,19 +164,12 @@ const Kanban = React.memo(() => {
           document.body
         )}
       </DndContext>
-      {!showModal && error && (
+      {!isModalShown && error && (
         <ErrorModal onClose={clearError}>{error}</ErrorModal>
       )}
-      {showModal && (
-        <ModalItem
-          onFilter={choosenTask}
-          onRemoveModal={removeModalHandler}
-          showModal={showModal}
-          modalIsActive={modalIsActive}
-        />
-      )}
+      {isModalShown && <ModalItem onRemoveModal={removeModalHandler} />}
     </div>
   );
-});
+};
 
 export default Kanban;

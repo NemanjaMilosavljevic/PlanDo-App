@@ -7,7 +7,7 @@ const IlustrationBackground = () => {
   return (
     <div
       className={`${styles["ilustration-bgc"]} ${
-        isToggle === true ? styles["dark"] : ""
+        isToggle ? styles["dark"] : ""
       }`}
     >
       <div>

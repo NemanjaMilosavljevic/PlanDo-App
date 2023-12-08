@@ -1,15 +1,17 @@
 import styles from "./Textarea.module.css";
+import React from "react";
 
-const Textarea = (props) => {
-  let classes = `${styles.textarea} ${props.className}`;
+const Textarea = ({ label, className, textarea }) => {
+  let classes = `${styles.textarea} ${className}`;
+
   return (
     <>
-      <label className={styles.label} htmlFor={props.textarea.id}>
-        {props.label}
+      <label className={styles.label} htmlFor={textarea.id}>
+        {label}
       </label>
-      <textarea className={classes} {...props.textarea}></textarea>
+      <textarea className={classes} {...textarea}></textarea>
     </>
   );
 };
 
-export default Textarea;
+export default React.memo(Textarea);

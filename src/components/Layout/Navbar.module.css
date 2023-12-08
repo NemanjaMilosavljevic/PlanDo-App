@@ -52,7 +52,10 @@
 
 .list {
   width: auto;
-  padding: 0 8px;
+}
+
+.list li {
+  padding: 12px 8px;
 }
 
 .container li:nth-child(1) {
