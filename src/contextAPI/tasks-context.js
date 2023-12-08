@@ -1,12 +1,5 @@
-import React, {
-  useState,
-  useEffect,
-  useReducer,
-  useRef,
-  useContext,
-} from "react";
+import React, { useState, useEffect, useReducer, useRef } from "react";
 import useHttp from "../hooks/use-http";
-import AuthContext from "./auth-context";
 
 const TasksContext = React.createContext({
   initialTasks: [],
@@ -30,12 +23,11 @@ const TasksContext = React.createContext({
 });
 
 export const TasksContextProvider = (props) => {
-  const ctxAuth = useContext(AuthContext);
-  const { userId } = ctxAuth;
   const [initialTasks, setInitialTasks] = useState([]);
   const [isModifiedTask, setIsModifiedTask] = useState(false);
   const monthRef = useRef();
   const priorityRef = useRef();
+  const userId = localStorage.getItem("localId");
 
   const initialFilterState = {
     filteredMonth: "All",

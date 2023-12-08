@@ -1,20 +1,96 @@
 import Input from "../components/UI/Input";
 import Button from "../components/UI/Button";
-import { useContext } from "react";
+import { useEffect } from "react";
 import styles from "./Login.module.css";
-import AuthContext from "../contextAPI/auth-context";
 import ClipLoader from "react-spinners/ClipLoader";
 import ErrorModal from "../components/UI/ErrorModal";
+import useHttp from "../hooks/use-http";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import {
+  logoutHandler,
+  retrieveStoredToken,
+  loginHandler,
+  authActions,
+} from "../store/auth-slice";
 
 const Login = () => {
-  const ctxAuth = useContext(AuthContext);
+  let tokenData = retrieveStoredToken();
+  const { sendRequest, isLoading, error, clearError } = useHttp();
+  const navigate = useNavigate();
+
+  const dispatch = useDispatch();
+  const auth = useSelector((state) => state.auth);
+  const {
+    enteredEmail,
+    enteredPassword,
+    emailInputIsInvalid,
+    passwordInputIsInvalid,
+    isLogin,
+    loginFormIsValid,
+  } = auth;
+
+  const emailInputHandler = (event) => {
+    dispatch(authActions.emailInput(event.target.value));
+    dispatch(authActions.isEmailValid());
+  };
+
+  const passwordInputHandler = (event) => {
+    dispatch(authActions.passwordInput(event.target.value));
+    dispatch(authActions.isPasswordValid());
+  };
+
+  const emailInputBlurHandler = () => {
+    dispatch(authActions.emailInputBlur());
+    dispatch(authActions.isEmailValid());
+  };
+
+  const passwordInputBlurHandler = () => {
+    dispatch(authActions.passwordInputBlur());
+    dispatch(authActions.isPasswordValid());
+  };
+
+  const switchAuthModeHandler = () => {
+    dispatch(authActions.switchAuthMode());
+  };
+
+  const loginHandlerFunction = (event) => {
+    event.preventDefault();
+
+    dispatch(authActions.emailInputBlur());
+    dispatch(authActions.passwordInputBlur());
+    dispatch(authActions.isLoginFormValid());
+
+    if (!loginFormIsValid) {
+      return;
+    }
+
+    const userCredentials = {
+      email: enteredEmail,
+      password: enteredPassword,
+      returnSecureToken: true,
+    };
+
+    dispatch(loginHandler(userCredentials, sendRequest, auth, navigate));
+  };
+  console.log(auth);
+
+  useEffect(() => {
+    const signOut = () => {
+      dispatch(logoutHandler());
+    };
+
+    if (tokenData) {
+      setTimeout(signOut, tokenData.duration);
+    } else {
+      signOut();
+    }
+  }, [tokenData, dispatch]);
 
   return (
     <>
-      {ctxAuth.error && (
-        <ErrorModal onClose={ctxAuth.clearError}>{ctxAuth.error}</ErrorModal>
-      )}
-      {ctxAuth.isLoading && !ctxAuth.error && (
+      {error && <ErrorModal onClose={clearError}>{error}</ErrorModal>}
+      {isLoading && !error && (
         <ClipLoader
           color={"#c78437"}
           loading={true}
@@ -27,27 +103,27 @@ const Login = () => {
           data-testid="loader"
         />
       )}
-      {!ctxAuth.isLoading && (
+      {!isLoading && (
         <div className={styles.wrapper}>
           <img src="Images/logo_text.png" alt="Sign In logo" />
           <p className={styles["heading"]}>
-            {!ctxAuth.isLogin ? "Sign Up" : "Login"}
+            {!auth.isLogin ? "Sign Up" : "Login"}
           </p>
-          <form onSubmit={ctxAuth.login}>
-            {ctxAuth.emailInputIsInvalid && (
+          <form onSubmit={loginHandlerFunction}>
+            {emailInputIsInvalid && (
               <p className="invalid-input">*Email is invalid!</p>
             )}
             <Input
               input={{
                 type: "email",
                 placeholder: "E-mail",
-                value: ctxAuth.enteredEmail,
-                onChange: ctxAuth.emailInputHandler,
-                onBlur: ctxAuth.emailInputBlurHandler,
+                value: enteredEmail,
+                onChange: emailInputHandler,
+                onBlur: emailInputBlurHandler,
               }}
               className={styles.placeholder}
             />
-            {ctxAuth.passwordInputIsInvalid && (
+            {passwordInputIsInvalid && (
               <p className="invalid-input">
                 *Password requires minimum 6 characters
               </p>
@@ -56,31 +132,29 @@ const Login = () => {
               input={{
                 type: "password",
                 placeholder: "Password",
-                value: ctxAuth.enteredPassword,
-                onChange: ctxAuth.passwordInputHandler,
-                onBlur: ctxAuth.passwordInputBlurHandler,
+                value: enteredPassword,
+                onChange: passwordInputHandler,
+                onBlur: passwordInputBlurHandler,
               }}
               className={styles.placeholder}
             />
-            {ctxAuth.error && <p className="error-text">{ctxAuth.error}</p>}
-            {!ctxAuth.error && (
+            {error && <p className="error-text">{error}</p>}
+            {!error && (
               <Button
                 className={styles.button}
                 button={{
                   type: "submit",
                 }}
               >
-                {!ctxAuth.isLogin ? "Sign Up" : "Login"}
+                {!isLogin ? "Sign Up" : "Login"}
               </Button>
             )}
           </form>
           <p
-            onClick={ctxAuth.switchAuthMode}
+            onClick={switchAuthModeHandler}
             className={styles["auth-mode-changer"]}
           >
-            {!ctxAuth.isLogin
-              ? "Login with existing account"
-              : "Create new account"}
+            {!isLogin ? "Login with existing account" : "Create new account"}
           </p>
         </div>
       )}

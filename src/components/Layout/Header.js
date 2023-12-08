@@ -3,13 +3,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsis, faMoon, faSun } from "@fortawesome/free-solid-svg-icons";
 import Switch from "../UI/Switch";
 import { Link } from "react-router-dom";
-import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { themeActions } from "../../store/theme-slice";
 import { setDarkMode } from "../../store/theme-slice";
 import { setLightMode } from "../../store/theme-slice";
+import { navbarActions } from "../../store/navbar-slice";
 
-const Header = (props) => {
+const Header = () => {
   const isToggle = useSelector((state) => state.theme.switchIsToggle);
   const dispatch = useDispatch();
 
@@ -23,16 +23,9 @@ const Header = (props) => {
     }
   };
 
-  useEffect(() => {
-    const mode = localStorage.getItem("mode");
-    if (mode === "dark") {
-      dispatch(themeActions.darkMode());
-      dispatch(setDarkMode());
-      return;
-    }
-    dispatch(themeActions.lightMode());
-    dispatch(setLightMode());
-  }, [dispatch]);
+  const toggleNavbarHandler = () => {
+    dispatch(navbarActions.toggleNavbar());
+  };
 
   return (
     <div className={styles["header"]}>
@@ -40,7 +33,7 @@ const Header = (props) => {
         <FontAwesomeIcon
           icon={faEllipsis}
           style={{ color: "#ffffff", cursor: "pointer", fontSize: "1.25rem" }}
-          onClick={props.onClick}
+          onClick={toggleNavbarHandler}
         />
         <Link to="/home" className={styles.link}>
           <img src="Images/plndo.png" alt="logo" />

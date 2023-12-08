@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import ReactDOM from "react-dom";
 import Navbar from "./components/Layout/Navbar";
 import TaskForm from "./pages/TaskForm";
@@ -7,34 +7,48 @@ import Ilustration from "./components/Ilustrations/Ilustration";
 import Kanban from "./pages/Kanban";
 import IlustrationBackground from "./pages/IlustrationBackground";
 import AnalyticsCard from "./pages/AnalitycsCard";
-import NavbarContext from "./contextAPI/navbar-context";
 import PageNotFound from "./pages/PageNotFound";
 import Login from "./pages/Login";
 import styles from "./components/Ilustrations/Ilustration.module.css";
 import TasksContext from "./contextAPI/tasks-context";
 import { Route, Routes, Navigate, NavLink } from "react-router-dom";
-import AuthContext from "./contextAPI/auth-context";
 import ChangePassword from "./pages/ChangePassword";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { themeActions } from "./store/theme-slice";
+import { setDarkMode } from "./store/theme-slice";
+import { setLightMode } from "./store/theme-slice";
 
 const App = () => {
-  const ctxNavbar = useContext(NavbarContext);
-  const ctxAuth = useContext(AuthContext);
   const ctxTasks = useContext(TasksContext);
+  const dispatch = useDispatch();
 
+  const isUserLoggedIn = useSelector((state) => state.auth.isUserLoggedIn);
+
+  const navbarAndHeaderIsShown = useSelector(
+    (state) => state.navbar.navbarAndHeaderIsShown
+  );
   const isToggle = useSelector((state) => state.theme.switchIsToggle);
 
   console.log("RENDERING APP");
 
+  useEffect(() => {
+    const mode = localStorage.getItem("mode");
+    if (mode === "dark") {
+      dispatch(themeActions.darkMode());
+      dispatch(setDarkMode());
+      return;
+    }
+    dispatch(themeActions.lightMode());
+    dispatch(setLightMode());
+  }, [dispatch]);
+
   return (
     <>
-      {ctxAuth.isLoggedIn && ctxNavbar.navbarAndHeaderIsShown && (
-        <Header onClick={ctxNavbar.toggleNavbar} />
-      )}
-      {ctxAuth.isLoggedIn && ctxNavbar.navbarAndHeaderIsShown && <Navbar />}
+      {isUserLoggedIn && navbarAndHeaderIsShown && <Header />}
+      {isUserLoggedIn && navbarAndHeaderIsShown && <Navbar />}
 
       <Routes>
-        {ctxAuth.isLoggedIn && (
+        {isUserLoggedIn && (
           <Route
             element={ReactDOM.createPortal(
               <IlustrationBackground />,
@@ -43,16 +57,14 @@ const App = () => {
             path="/home"
           ></Route>
         )}
-        {ctxAuth.isLoggedIn && (
+        {isUserLoggedIn && (
           <Route element={<TaskForm />} path="/create-task"></Route>
         )}
-        {ctxAuth.isLoggedIn && (
-          <Route element={<Kanban />} path="/kanban"></Route>
-        )}
-        {ctxAuth.isLoggedIn && (
+        {isUserLoggedIn && <Route element={<Kanban />} path="/kanban"></Route>}
+        {isUserLoggedIn && (
           <Route element={<AnalyticsCard />} path="/analitics"></Route>
         )}
-        {!ctxAuth.isLoggedIn ? (
+        {!isUserLoggedIn ? (
           <Route
             path="/"
             element={<Navigate to="/sign-in" />}
@@ -65,11 +77,11 @@ const App = () => {
             replace={true}
           ></Route>
         )}
-        {ctxAuth.isLoggedIn && (
+        {isUserLoggedIn && (
           <Route path="/update-password" element={<ChangePassword />}></Route>
         )}
         <Route path="/sign-in" element={<Login />}></Route>
-        {ctxAuth.isLoggedIn ? (
+        {isUserLoggedIn ? (
           <Route path="*" element={<PageNotFound />}></Route>
         ) : (
           <Route

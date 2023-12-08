@@ -3,7 +3,6 @@ import FilterCard from "../components/Analytics/FilterCard";
 import Ilustration from "../components/Ilustrations/Ilustration";
 import styles from "./AnalitycsCard.module.css";
 import classes from "../components/Ilustrations/IlustrationAnalitycs.module.css";
-
 import { useSelector } from "react-redux";
 
 const AnalyticsCard = () => {
