@@ -20,22 +20,20 @@ const chartSlice = createSlice({
       state.filteredTasks = action.payload;
     },
     filterTasks(state, action) {
-      const monthValue = action.payload.monthRef.current.value;
-      const priorityValue = action.payload.priorityRef.current.value;
-      const initialTasks = action.payload.initialTasks;
+      const { filteredMonth, filteredPriority, initialTasks } = action.payload;
 
       const tasksPerMonth = initialTasks.filter((task) => {
-        if (monthValue === "All") {
+        if (filteredMonth === "All") {
           return initialTasks;
         }
-        return monthValue === task.createdOn.slice(0, -9);
+        return filteredMonth === task.createdOn.slice(0, -9);
       });
 
       const tasksPerPriority = initialTasks.filter((task) => {
-        if (priorityValue === "All") {
+        if (filteredPriority === "All") {
           return initialTasks;
         }
-        return priorityValue === task.priority;
+        return filteredPriority === task.priority;
       });
 
       state.filteredTasks = tasksPerMonth.filter(

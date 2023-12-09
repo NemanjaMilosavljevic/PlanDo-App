@@ -1,14 +1,11 @@
 import styles from "./FilterCard.module.css";
 import DropdownInput from "../UI/DropdownInput";
-import { useRef, useEffect } from "react";
+import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { chartActions } from "../../store/chart-slice";
 import { tasksActions } from "../../store/tasks-slice";
 
 const FilterCard = () => {
-  const monthRef = useRef();
-  const priorityRef = useRef();
-
   const dispatch = useDispatch();
   const chart = useSelector((state) => state.chart);
   const { filteredMonth, filteredPriority } = chart;
@@ -18,13 +15,21 @@ const FilterCard = () => {
 
   const filterMonthHandler = (event) => {
     dispatch(chartActions.setFilterMonth(event.target.value));
-    dispatch(chartActions.filterTasks({ initialTasks, monthRef, priorityRef }));
   };
 
   const filterPriorityHandler = (event) => {
     dispatch(chartActions.setFilterPriority(event.target.value));
-    dispatch(chartActions.filterTasks({ initialTasks, monthRef, priorityRef }));
   };
+
+  useEffect(() => {
+    dispatch(
+      chartActions.filterTasks({
+        initialTasks,
+        filteredMonth,
+        filteredPriority,
+      })
+    );
+  }, [dispatch, filteredPriority, filteredMonth, initialTasks]);
 
   useEffect(() => {
     dispatch(chartActions.setFilterMonth("All"));
@@ -40,7 +45,6 @@ const FilterCard = () => {
     <div className={styles["filter-wrapper"]}>
       <label id={styles.label}>Filter by:</label>
       <DropdownInput
-        inputRef={monthRef}
         className={styles["filter-select"]}
         dropdownInput={{
           onChange: filterMonthHandler,
@@ -64,7 +68,6 @@ const FilterCard = () => {
       </DropdownInput>
 
       <DropdownInput
-        inputRef={priorityRef}
         className={styles["filter-select-second"]}
         dropdownInput={{
           onChange: filterPriorityHandler,
