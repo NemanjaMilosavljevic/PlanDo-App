@@ -1,8 +1,8 @@
 .confirmModal {
   position: fixed;
   top: 100px;
-  left: 250px;
-  width: 50%;
+  left: 32%;
+  width: 36%;
   border-radius: 5px;
   border: var(--border-modal-color);
   background-color: var(--background-color-kanban-item);

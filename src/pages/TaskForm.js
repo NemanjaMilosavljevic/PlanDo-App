@@ -12,6 +12,7 @@ import useHttp from "../hooks/use-http";
 import { useSelector, useDispatch } from "react-redux";
 import { tasksActions, CreateTask } from "../store/tasks-slice";
 import { taskFormActions } from "../store/taskForm-slice";
+import { closeConfirmModal } from "../store/tasks-slice";
 
 const TaskForm = () => {
   const userId = localStorage.getItem("localId");
@@ -19,7 +20,7 @@ const TaskForm = () => {
   const { isLoading, error, sendRequest, clearError } = useHttp();
   const dispatch = useDispatch();
   const tasks = useSelector((state) => state.tasks);
-  const { initialTasks, confirmModalIsActive } = tasks;
+  const { initialTasks, confirmModalIsActive, didCreateTask } = tasks;
 
   const taskForm = useSelector((state) => state.taskForm);
   const {
@@ -111,11 +112,26 @@ const TaskForm = () => {
     }
   }, [confirmModalIsActive, dispatch]);
 
+  const closeModal = () => {
+    dispatch(closeConfirmModal({ type: "taskForm" }));
+  };
+
   return (
     <>
       {confirmModalIsActive &&
         ReactDOM.createPortal(
-          <ConfirmModal></ConfirmModal>,
+          <ConfirmModal
+            animation={didCreateTask}
+            textField={<p>Task was succesfully created!</p>}
+            children={
+              <Button
+                className={styles["button-confirm"]}
+                button={{ onClick: closeModal }}
+              >
+                OK
+              </Button>
+            }
+          ></ConfirmModal>,
           document.getElementById("confirm-modal")
         )}
 
@@ -165,7 +181,7 @@ const TaskForm = () => {
                     onChange: checkboxHandler,
                   }}
                 />
-                Priority
+                Important
               </label>
               <Input
                 label="Due date"
