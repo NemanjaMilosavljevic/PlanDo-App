@@ -76,7 +76,7 @@ const Navbar = () => {
             <FontAwesomeIcon icon={faClipboard} style={{ color: "#000" }} />
           </div>
           {isShown && (
-            <span className={styles["first-row"]}>Create New Task</span>
+            <span className={styles["first-list-item"]}>Create New Task</span>
           )}
         </Link>
 
@@ -108,7 +108,6 @@ const Navbar = () => {
             className={`${styles.container} ${
               showAccountBar ? styles.visible : ""
             }`}
-            id="proba"
             ref={accountRef}
           >
             <ul className={styles.list}>
