@@ -1,21 +1,13 @@
-import Button from "./Button";
 import styles from "./ConfirmModal.module.css";
 import CSSTransition from "react-transition-group/CSSTransition";
-import { useSelector, useDispatch } from "react-redux";
-import { closeConfirmModal } from "../../store/tasks-slice";
 
-const ConfirmModal = () => {
-  const dispatch = useDispatch();
-  const didCreateTask = useSelector((state) => state.tasks.didCreateTask);
-
-  const closeModal = () => {
-    dispatch(closeConfirmModal());
-  };
+const ConfirmModal = ({ textField, children, animation, className }) => {
+  let classes = `${styles.confirmModal} ${className}`;
 
   return (
     <CSSTransition
       timeout={600}
-      in={didCreateTask}
+      in={animation}
       mountOnEnter
       unmountOnExit
       classNames={{
@@ -25,11 +17,9 @@ const ConfirmModal = () => {
         exitActive: `${styles.closeModal}`,
       }}
     >
-      <section className={styles.confirmModal}>
-        <p>Task was succesfully created!</p>
-        <Button className={styles.button} button={{ onClick: closeModal }}>
-          Cancel
-        </Button>
+      <section className={classes}>
+        {textField}
+        {children}
       </section>
     </CSSTransition>
   );

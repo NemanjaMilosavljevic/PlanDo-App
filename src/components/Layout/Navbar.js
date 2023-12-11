@@ -67,24 +67,24 @@ const Navbar = () => {
   return (
     <>
       <NavbarCard
-        className={styles["nav-wrapper"]}
+        className={`${styles["nav-wrapper"]} ${isShown ? styles.show : ""}`}
         onMouseEnter={onMouseEnterHandler}
         onMouseLeave={onMouseLeaveHandler}
       >
         <Link to="/create-task" className={styles.link}>
           <div className={styles.flexcont}>
             <FontAwesomeIcon icon={faClipboard} style={{ color: "#000" }} />
-            {isShown && <span>Create New Task</span>}
           </div>
+          {isShown && (
+            <span className={styles["first-list-item"]}>Create New Task</span>
+          )}
         </Link>
 
         <Link to="/kanban" className={styles.link}>
           <div className={styles.flexcont}>
-            <FontAwesomeIcon icon={faTableColumns} style={{ color: "#000 " }} />
-            {isShown && (
-              <span className={styles["span-text"]}>Kanban Board</span>
-            )}
+            <FontAwesomeIcon icon={faTableColumns} style={{ color: "#000" }} />
           </div>
+          {isShown && <span className={styles["span-text"]}>Kanban Board</span>}
         </Link>
         <Link to="/analitics" className={styles.link}>
           <div className={styles.flexcont}>
@@ -94,19 +94,20 @@ const Navbar = () => {
                 color: "#000",
               }}
             />
-            {isShown && <span className={styles["span-text"]}>Analytics</span>}
           </div>
+          {isShown && <span className={styles["span-text"]}>Analytics</span>}
         </Link>
 
-        <div className={styles.flexcont} onClick={showAccountHandler}>
-          <FontAwesomeIcon icon={faCircleUser} style={{ color: "#000" }} />
+        <div onClick={showAccountHandler} className={styles.link}>
+          <div className={styles.flexcont}>
+            <FontAwesomeIcon icon={faCircleUser} style={{ color: "#000" }} />
+          </div>
           {isShown && <span className={styles["span-text"]}>Account</span>}
 
           <div
             className={`${styles.container} ${
               showAccountBar ? styles.visible : ""
             }`}
-            id="proba"
             ref={accountRef}
           >
             <ul className={styles.list}>
@@ -128,8 +129,8 @@ const Navbar = () => {
               icon={faArrowRightFromBracket}
               style={{ color: "#000" }}
             />
-            {isShown && <span className={styles["span-text"]}>Sign out</span>}
           </div>
+          {isShown && <span className={styles["span-text"]}>Sign out</span>}
         </Link>
       </NavbarCard>
     </>

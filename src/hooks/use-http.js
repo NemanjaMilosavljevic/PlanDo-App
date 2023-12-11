@@ -19,12 +19,17 @@ const useHttp = () => {
       });
 
       if (!response.ok) {
-        throw new Error("Request failed!");
+        throw new Error(
+          `Error message: ${
+            response.statusText || "Something went wrong!"
+          }; Status Code: ${response.status}`
+        );
       }
 
       const data = await response.json();
       applyData(data);
     } catch (err) {
+      console.log(err);
       setError(err.message || "Something went wrong!");
     }
     setIsLoading(false);

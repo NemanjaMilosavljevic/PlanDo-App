@@ -3,51 +3,61 @@
   top: 40px;
   left: 0;
   height: calc(100vh - 40px);
-  width: auto;
+  width: 40px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   background-color: var(--navbar-background-color);
   font-size: 0.9rem;
   z-index: 10;
+  transition: all 0.3s ease;
+}
+
+.show {
+  width: 11rem;
 }
 
 .flexcont {
-  display: flex;
-  align-items: center;
-  width: auto;
   margin: 0;
   padding: 0;
 }
 
-.flexcont span {
+.link span {
   margin-left: 15px;
+}
+
+.first-list-item {
   font-size: 0.9rem;
 }
 
-.flexcont .span-text {
+.span-text {
   font-size: 0.75rem;
 }
 
 .link {
+  position: relative;
+  display: flex;
+  width: 11rem;
+  gap: 0.25rem;
   text-decoration: none;
   color: #222;
 }
 
-.flexcont .container {
+.container {
   position: fixed;
   display: flex;
   flex-direction: column;
-  max-width: 200px;
+  min-width: 150px;
   height: fit-content;
-  inset: 460px 0 0 38px;
+  left: 59px;
+  bottom: 40px;
   z-index: 10;
   background-color: var(--navbar-background-color);
-  visibility: hidden;
+  display: none;
 }
 
-.flexcont .visible {
-  visibility: visible;
+.visible {
+  display: block;
 }
 
 .list {

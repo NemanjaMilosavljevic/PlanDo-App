@@ -36,11 +36,11 @@ const ChangePassword = () => {
   const changePasswordHandlerFunction = (event) => {
     event.preventDefault();
 
-    dispatch(authActions.newPasswordInputBlur());
-
     if (!changePasswordFormIsValid) {
       return;
     }
+
+    dispatch(authActions.newPasswordInputBlur());
 
     const newPasswordInfo = {
       idToken: token,

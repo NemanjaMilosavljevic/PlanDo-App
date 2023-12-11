@@ -177,6 +177,15 @@
   background-color: var(--delete-button-color-hover);
 }
 
+.button-confirm {
+  margin-bottom: 1rem;
+  margin-right: 1rem;
+}
+
+.confirm-container-buttons {
+  display: flex;
+}
+
 .animationEnter {
   animation: showModal 600ms ease-in forwards;
 }

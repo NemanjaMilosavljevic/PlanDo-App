@@ -7,18 +7,27 @@ import Button from "./Button";
 import Input from "./Input";
 import DropdownInput from "./DropdownInput";
 import Textarea from "./Textarea";
+import ConfirmModal from "./ConfirmModal";
 import ErrorModal from "./ErrorModal";
 import { useSelector, useDispatch } from "react-redux";
-import { UpdateTask, deleteTaskHandler } from "../../store/tasks-slice";
+import {
+  UpdateTask,
+  deleteTaskHandler,
+  tasksActions,
+  closeConfirmModal,
+} from "../../store/tasks-slice";
 import useHttp from "../../hooks/use-http";
 import CSSTransition from "react-transition-group/CSSTransition";
 import { modalSliceActions } from "../../store/modal-slice";
+import { useEffect } from "react";
 
 const ModalOverlay = ({ onRemoveModal, className }) => {
   const userId = localStorage.getItem("localId");
 
   const dispatch = useDispatch();
   const initialTasks = useSelector((state) => state.tasks.initialTasks);
+  const tasks = useSelector((state) => state.tasks);
+  const { modalToConfirmDeletingTaskIsActive, didDeleteTask } = tasks;
   const { error, clearError, sendRequest } = useHttp();
 
   const isToggle = useSelector((state) => state.theme.switchIsToggle);
@@ -110,12 +119,54 @@ const ModalOverlay = ({ onRemoveModal, className }) => {
         onRemoveModal
       )
     );
+    dispatch(tasksActions.closeConfirmingModalForDeletingTask());
   };
 
   let classes = `${styles["modal-container"]} ${className}`;
 
+  const confirmDeletingTaskHandler = (event) => {
+    event.preventDefault();
+    dispatch(tasksActions.openConfirmingModalForDeletingTask());
+  };
+
+  const closeModal = () => {
+    dispatch(closeConfirmModal({ type: "modal" }));
+  };
+
+  useEffect(() => {
+    if (modalToConfirmDeletingTaskIsActive) {
+      dispatch(tasksActions.isTaskDeleted());
+    }
+  }, [modalToConfirmDeletingTaskIsActive, dispatch]);
+
   return (
     <>
+      {modalToConfirmDeletingTaskIsActive &&
+        ReactDOM.createPortal(
+          <ConfirmModal
+            animation={didDeleteTask}
+            textField={<p>Are you sure you want to delete task?</p>}
+            children={
+              <>
+                <div className={styles["confirm-container-buttons"]}>
+                  <Button
+                    className={styles["button-confirm"]}
+                    button={{ onClick: closeModal }}
+                  >
+                    No
+                  </Button>
+                  <Button
+                    className={styles["button-confirm"]}
+                    button={{ onClick: onDeleteTask }}
+                  >
+                    Yes
+                  </Button>
+                </div>
+              </>
+            }
+          ></ConfirmModal>,
+          document.getElementById("confirm-modal")
+        )}
       {!error && (
         <CSSTransition
           timeout={600}
@@ -234,7 +285,7 @@ const ModalOverlay = ({ onRemoveModal, className }) => {
                 <Button
                   className={styles["delete-btn"]}
                   button={{
-                    onClick: onDeleteTask,
+                    onClick: confirmDeletingTaskHandler,
                   }}
                 >
                   Delete

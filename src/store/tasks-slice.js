@@ -5,12 +5,26 @@ const initialState = {
   isModifiedTask: false,
   didCreateTask: false,
   confirmModalIsActive: false,
+  modalToConfirmDeletingTaskIsActive: false,
+  didDeleteTask: false,
 };
 
 const tasksSlice = createSlice({
   name: "tasks",
   initialState,
   reducers: {
+    openConfirmingModalForDeletingTask(state) {
+      state.modalToConfirmDeletingTaskIsActive = true;
+    },
+    closeConfirmingModalForDeletingTask(state) {
+      state.modalToConfirmDeletingTaskIsActive = false;
+    },
+    isTaskDeleted(state) {
+      state.didDeleteTask = true;
+    },
+    isTaskNotDeleted(state) {
+      state.didDeleteTask = false;
+    },
     confirmModalIsActive(state) {
       state.confirmModalIsActive = true;
     },
@@ -62,12 +76,19 @@ const tasksSlice = createSlice({
 
 // Sending http request for adding new task
 
-export const closeConfirmModal = () => {
+export const closeConfirmModal = (payload) => {
   return (dispatch) => {
-    setTimeout(() => {
-      dispatch(tasksActions.confirmModalIsNotActive());
-    }, 1000);
-    dispatch(tasksActions.isTaskNotCreated());
+    if (payload?.type === "taskForm") {
+      setTimeout(() => {
+        dispatch(tasksActions.confirmModalIsNotActive());
+      }, 1000);
+      dispatch(tasksActions.isTaskNotCreated());
+    } else if (payload?.type === "modal") {
+      setTimeout(() => {
+        dispatch(tasksActions.closeConfirmingModalForDeletingTask());
+      }, 1000);
+      dispatch(tasksActions.isTaskNotDeleted());
+    }
   };
 };
 
