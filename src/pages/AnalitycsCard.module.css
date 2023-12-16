@@ -41,3 +41,29 @@
   color: var(--color-sub-heading);
   margin-top: 8px;
 }
+
+@media  (min-width: 1400px) {
+  .card-analitycs h1 {
+    font-size: 2.5rem;
+   }
+   
+   .card-analitycs h3 {
+     font-size: 1.5rem;
+   }
+ }
+
+
+@media  (max-width: 992px) {
+  .card-analitycs h1 {
+   font-size: 1.75rem;
+  }
+  
+  .card-analitycs h3 {
+    font-size: 0.9rem;
+  }
+
+  .inner-container  {
+    width: 45%;
+  }
+}
+

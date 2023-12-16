@@ -41,3 +41,14 @@ input[type="checkbox"]:focus {
   outline: 2px solid var(--outline);
   border: 0.5px solid var(--border-focus);
 }
+
+@media  (max-width: 992px) {
+  
+  input[type="checkbox"] {
+    width: 15px
+  }
+
+  .input::placeholder {
+    font-size: 0.75rem;
+  }
+}

@@ -2,14 +2,41 @@
   display: flex;
   flex-direction: column;
   width: 34%;
-  padding-left: 20px;
-  padding-right: 20px;
+  padding-left: 2%;
+  padding-right: 2%;
   border: 0.5px solid var(--border);
   background-color: var(--background-kanban-column-color);
   scroll-behavior: smooth;
+  margin: 1.5rem 0.75rem 0;
 }
 
 .heading {
   color: var(--heading-kanban-column-color);
-  margin-left: 1rem;
+
+}
+
+@media  (min-width: 1400px) {
+  .heading {
+    font-size: 1.3rem;
+  }
+
+  .kanban-column {
+    padding-left: 3%;
+    padding-right: 3%;
+    width: 30%;
+  }
+
+}
+
+@media  (max-width: 992px) {
+  .heading {
+    font-size: 0.8rem;
+  }
+
+  .kanban-column {
+    margin: 0 0.25rem;
+    padding-left: 1%;
+    padding-right: 1%;
+  }
+
 }

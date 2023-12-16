@@ -17,14 +17,21 @@
 .switch-container {
   display: flex;
   gap: 1.25rem;
+  align-items: center;
 }
 
 .link {
-  display: flex;
+  width: 70px;
+}
+
+.image-container {
+  height: 32px;
+  width: 32px;
 }
 
 .icon-img {
-  margin-right: 1rem;
+  width: 100%;
+  display: block;
 }
 
 .switch-mode {
@@ -32,3 +39,31 @@
   gap: 0.5rem;
   align-items: center;
 }
+
+.icon {
+  font-size: 1.25rem;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+
+@media  (min-width: 1400px) {
+  .header {
+    height: 50px;
+  }
+
+  .link {
+    width: 80px;
+  }
+
+  .icon {
+    font-size: 1.5rem;
+  }
+}
+
+@media  (max-width: 992px) {
+  .link {
+    width: 60px;
+  }
+}
+

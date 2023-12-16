@@ -14,4 +14,4 @@ const Textarea = ({ label, className, textarea }) => {
   );
 };
 
-export default React.memo(Textarea);
+export default Textarea;
