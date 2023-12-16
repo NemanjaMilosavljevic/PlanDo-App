@@ -100,7 +100,7 @@ const fetchTasksOnCreate = (taskData, dispatch, taskObj) => {
   dispatch(tasksActions.confirmModalIsActive());
 
   setTimeout(() => {
-    dispatch(closeConfirmModal());
+    dispatch(closeConfirmModal({ type: "taskForm" }));
   }, 3000);
 };
 
