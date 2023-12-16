@@ -1,7 +1,7 @@
 .card {
   border-radius: 5px;
   height: auto;
-  max-width: 450px;
+  width: 100%;
   margin-bottom: 15px;
   background-color: var(--background-color-kanban-item);
   box-shadow: var(--kanban-item-shadow);
