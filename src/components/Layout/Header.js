@@ -84,11 +84,11 @@ const Header = () => {
       <div className={styles["inner-container"]}>
         <FontAwesomeIcon
           icon={faEllipsis}
-          style={{ color: "#ffffff", cursor: "pointer", fontSize: "1.25rem" }}
+          className={styles.icon}
           onClick={toggleNavbarHandler}
         />
         <Link to="/home" className={styles.link}>
-          <img src="Images/plndo.png" alt="logo" />
+          <img src="Images/plndo.png" alt="logo"  className={styles["icon-img"]}/>
         </Link>
       </div>
       <div className={styles["switch-container"]}>
@@ -106,11 +106,13 @@ const Header = () => {
             style={{ color: "#ccc", fontSize: "12px" }}
           />
         </div>
+        <div className={styles["image-container"]}>
         <img
           src="Images/PlanDo.png"
           alt="plando icon"
           className={styles["icon-img"]}
         />
+        </div>
       </div>
     </div>
   );

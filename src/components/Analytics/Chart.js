@@ -41,7 +41,7 @@ const Chart = () => {
   ];
 
   return (
-    <div className={styles["cont"]}>
+    <div className={styles["container"]}>
       <ResponsiveContainer width="90%" height={300}>
         <BarChart
           width="30%"

@@ -2,7 +2,7 @@
   position: relative;
   padding-top: 140px;
   padding-right: 10%;
-  padding-left: 15%;
+  padding-left: 13%;
   width: 100%;
   min-height: 100vh;
   display: flex;
@@ -19,7 +19,7 @@
   position: relative;
   padding-top: 140px;
   padding-right: 10%;
-  padding-left: 15%;
+  padding-left: 13%;
   width: 100%;
   min-height: 100vh;
   display: flex;
@@ -34,8 +34,8 @@
 
 .kanban-heading {
   position: absolute;
-  top: 50px;
-  left: 220px;
+  top: 70px;
+  left: 14%;
 }
 
 .main-heading,
@@ -43,4 +43,28 @@
   color: var(--color-main-heading);
   font-family: inherit;
   margin: 0;
+}
+
+@media  (min-width: 1400px) {
+  .main-heading {
+    font-size: 2.5rem;
+  }
+
+  .sub-heading {
+    font-size: 1.25rem;
+  }
+
+  
+
+}
+
+@media  (max-width: 992px) {
+  .main-heading {
+    font-size: 1.5rem;
+  }
+
+  .sub-heading {
+    font-size: 0.8rem;
+  }
+
 }

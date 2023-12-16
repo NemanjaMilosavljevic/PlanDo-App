@@ -59,7 +59,8 @@ const ChangePassword = () => {
           loading={true}
           cssOverride={{
             position: "fixed",
-            inset: "280px 0 0 630px",
+            left: "50%",
+            top: "40%"
           }}
           size={80}
           aria-label="Loading Spinner"
@@ -68,8 +69,8 @@ const ChangePassword = () => {
       )}
       {!isLoading && (
         <div className={styles.wrapper}>
-          <img src="Images/logo_text.png" alt="Sign In logo" />
-          <form onSubmit={changePasswordHandlerFunction}>
+          <img src="Images/logo_text.png" alt="Sign In logo" className={styles.image}/>
+          <form onSubmit={changePasswordHandlerFunction} className={styles.form}>
             {newPasswordInputIsInvalid && (
               <p className="invalid-input">
                 *Password requires minimum 6 characters

@@ -1,6 +1,7 @@
 .filter-wrapper {
   display: flex;
   justify-content: center;
+  align-items: center;
   border: 1px solid var(--border);
   background-color: var(--background-color-kanban-item);
   border-radius: 16px;
@@ -17,8 +18,8 @@
   text-wrap: nowrap;
 }
 
-.filter-wrapper .filter-select,
-.filter-wrapper .filter-select-second {
+.filter-select,
+.filter-select-second {
   height: 22px;
   width: auto;
   margin-top: 8px;
@@ -33,4 +34,21 @@
   ):focus {
   outline: none;
   border: 0.5px solid var(--border);
+}
+
+@media  (max-width: 992px) {
+  .filter-wrapper {
+    flex-direction: column;
+    height: auto;
+  }
+
+  #label {
+   margin-left: 0.75rem;
+  }
+
+  .filter-select,
+  .filter-select-second {
+  font-size: 0.7rem;
+  width: 60%;
+}
 }

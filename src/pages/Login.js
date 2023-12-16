@@ -99,7 +99,8 @@ const Login = () => {
           loading={true}
           cssOverride={{
             position: "fixed",
-            inset: "280px 0 0 630px",
+            left: "50%",
+            top: "40%"
           }}
           size={80}
           aria-label="Loading Spinner"
@@ -110,7 +111,7 @@ const Login = () => {
         <div className={styles.wrapper}>
           <img src="Images/logo_text.png" alt="Sign In logo" />
           <p className={styles["heading"]}>{!isLogin ? "Sign Up" : "Login"}</p>
-          <form onSubmit={loginHandlerFunction}>
+          <form onSubmit={loginHandlerFunction} className={styles.form}>
             {emailInputIsInvalid && (
               <p className="invalid-input">*Email is invalid!</p>
             )}

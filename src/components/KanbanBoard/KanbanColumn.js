@@ -56,7 +56,7 @@ const KanbanColumn = ({ columnId, setHeadings, showModal }) => {
             icon={faRectangleList}
             style={{
               color: `${isToggle ? "#c78437" : "#000"}`,
-              padding: " 0px 20px 0px 10px",
+              padding: " 0px 20px 0px 0px",
             }}
           />
         ) : columnId === "In progress" ? (
@@ -64,7 +64,7 @@ const KanbanColumn = ({ columnId, setHeadings, showModal }) => {
             icon={faListCheck}
             style={{
               color: `${isToggle ? "#c78437" : "#000"}`,
-              padding: " 0px 20px 0px 10px",
+              padding: " 0px 20px 0px 0px",
             }}
           />
         ) : (
@@ -72,7 +72,7 @@ const KanbanColumn = ({ columnId, setHeadings, showModal }) => {
             icon={faSquareCheck}
             style={{
               color: `${isToggle ? "#c78437" : "#000"}`,
-              padding: " 0px 20px 0px 10px",
+              padding: " 0px 20px 0px 0px",
             }}
           />
         )}

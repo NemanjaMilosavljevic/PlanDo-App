@@ -106,7 +106,7 @@ body {
 
 .invalid-input {
   color: #ff0000;
-  margin: 0;
+  margin: 0 ;
   font-size: 0.7rem;
 }
 
@@ -114,4 +114,10 @@ body {
   text-align: center;
   margin-top: 250px;
   font-size: 2rem;
+}
+
+@media  (max-width: 992px) {
+  .invalid-input {
+    font-size: 0.5rem;
+  }
 }

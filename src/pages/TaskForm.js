@@ -141,7 +141,8 @@ const TaskForm = () => {
           loading={true}
           cssOverride={{
             position: "fixed",
-            inset: "280px 0 0 630px",
+            left: "50%",
+            top: "40%"
           }}
           size={80}
           aria-label="Loading Spinner"
