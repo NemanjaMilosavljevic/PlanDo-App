@@ -47,6 +47,7 @@
   --user-info-bottom-border: 1px solid rgba(107, 101, 101, 0.3);
   --error-modal-background: #ffffff;
   --error-modal-color: #000000;
+  --button-landing-page: #ffffffb3;
 }
 
 [data-theme="dark"] {
@@ -94,6 +95,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  overflow-x: hidden;
 }
 
 .show-ilustration {
@@ -106,7 +108,7 @@ body {
 
 .invalid-input {
   color: #ff0000;
-  margin: 0 ;
+  margin: 0;
   font-size: 0.7rem;
 }
 
@@ -116,7 +118,7 @@ body {
   font-size: 2rem;
 }
 
-@media  (max-width: 992px) {
+@media (max-width: 992px) {
   .invalid-input {
     font-size: 0.5rem;
   }

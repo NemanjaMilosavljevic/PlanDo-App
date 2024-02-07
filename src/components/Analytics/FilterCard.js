@@ -53,13 +53,13 @@ const FilterCard = () => {
         }}
       >
         <option value="All">Month</option>
-        <option value="Januar">Januar</option>
-        <option value="Februar">Februar</option>
-        <option value="Mart">Mart</option>
+        <option value="January">January</option>
+        <option value="February">February</option>
+        <option value="March">March</option>
         <option value="April">April</option>
-        <option value="Mai">Mai</option>
-        <option value="Jun">Jun</option>
-        <option value="Jul">Jul</option>
+        <option value="May">May</option>
+        <option value="June">June</option>
+        <option value="July">July</option>
         <option value="August">August</option>
         <option value="September">September</option>
         <option value="October">October</option>

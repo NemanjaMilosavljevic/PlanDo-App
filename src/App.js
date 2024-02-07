@@ -15,6 +15,7 @@ import ChangePassword from "./pages/ChangePassword";
 import { useDispatch, useSelector } from "react-redux";
 import useHttp from "./hooks/use-http";
 import { tasksActions } from "./store/tasks-slice";
+import LandingPage from "./components/LandingPage/LandingPage";
 
 let initialRender = true;
 
@@ -69,6 +70,7 @@ const App = () => {
       {isUserLoggedIn && navbarAndHeaderIsShown && <Navbar />}
 
       <Routes>
+        (<Route path="/landing-page" element={<LandingPage />}></Route>)
         {isUserLoggedIn && (
           <Route
             element={ReactDOM.createPortal(

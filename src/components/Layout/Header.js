@@ -79,6 +79,10 @@ const Header = () => {
     dispatch(navbarActions.toggleNavbar());
   };
 
+  const showLandingPage = () => {
+    dispatch(navbarActions.hideNavbarAndHeader());
+  };
+
   return (
     <div className={styles["header"]}>
       <div className={styles["inner-container"]}>
@@ -88,7 +92,12 @@ const Header = () => {
           onClick={toggleNavbarHandler}
         />
         <Link to="/home" className={styles.link}>
-          <img src="Images/plndo.png" alt="logo"  className={styles["icon-img"]}/>
+          <img
+            src="Images/plndo.png"
+            alt="logo"
+            title="Go to home page"
+            className={styles["icon-img"]}
+          />
         </Link>
       </div>
       <div className={styles["switch-container"]}>
@@ -107,11 +116,18 @@ const Header = () => {
           />
         </div>
         <div className={styles["image-container"]}>
-        <img
-          src="Images/PlanDo.png"
-          alt="plando icon"
-          className={styles["icon-img"]}
-        />
+          <Link
+            to="/landing-page"
+            className={styles.link}
+            onClick={showLandingPage}
+          >
+            <img
+              src="Images/PlanDo.png"
+              alt="plando icon"
+              title="Go to landing page"
+              className={styles["icon-img"]}
+            />
+          </Link>
         </div>
       </div>
     </div>
