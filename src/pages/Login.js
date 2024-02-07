@@ -100,7 +100,7 @@ const Login = () => {
           cssOverride={{
             position: "fixed",
             left: "50%",
-            top: "40%"
+            top: "40%",
           }}
           size={80}
           aria-label="Loading Spinner"
@@ -152,12 +152,15 @@ const Login = () => {
               </Button>
             )}
           </form>
-          <p
-            onClick={switchAuthModeHandler}
-            className={styles["auth-mode-changer"]}
-          >
-            {!isLogin ? "Login with existing account" : "Create new account"}
-          </p>
+          <div className={styles["text-wrapper"]}>
+            <span>{!isLogin ? "Already have account? " : "No account? "}</span>
+            <span
+              onClick={switchAuthModeHandler}
+              className={styles["auth-mode-changer"]}
+            >
+              {!isLogin ? "Login with existing account" : "Create new account"}
+            </span>
+          </div>
         </div>
       )}
     </>
