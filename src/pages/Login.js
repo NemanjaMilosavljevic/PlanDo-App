@@ -6,7 +6,7 @@ import ClipLoader from "react-spinners/ClipLoader";
 import Modal from "../components/UI/Modal";
 import useHttp from "../hooks/use-http";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   logoutHandler,
   retrieveStoredToken,
