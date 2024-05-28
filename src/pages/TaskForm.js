@@ -89,7 +89,7 @@ const TaskForm = () => {
         enteredDescription: "",
         chosenFlag: "Not-important",
         enteredDueDate: "",
-        enteredStatus: "To do",
+        enteredStatus: "To Do",
       })
     );
 
@@ -192,7 +192,7 @@ const TaskForm = () => {
                   onChange: statusChangeHandler,
                 }}
               >
-                <option value="To do">To do</option>
+                <option value="To Do">To do</option>
                 <option value="In progress">In progress</option>
                 <option value="Done">Done</option>
               </DropdownInput>
