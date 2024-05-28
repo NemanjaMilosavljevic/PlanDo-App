@@ -7,6 +7,7 @@ import chartSlice from "./chart-slice";
 import dndSlice from "./dnd-slice";
 import taskFormSlice from "./taskForm-slice";
 import modalSlice from "./modal-slice";
+import usersSlice from "./users-slice";
 
 const store = configureStore({
   reducer: {
@@ -18,6 +19,7 @@ const store = configureStore({
     dnd: dndSlice,
     taskForm: taskFormSlice,
     modal: modalSlice,
+    users: usersSlice,
   },
 });
 

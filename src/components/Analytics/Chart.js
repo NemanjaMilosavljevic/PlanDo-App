@@ -9,36 +9,25 @@ import {
 } from "recharts";
 import styles from "./Chart.module.css";
 import { useSelector } from "react-redux";
+import { useMemo } from "react";
 
 const Chart = () => {
   const filteredTasks = useSelector((state) => state.chart.filteredTasks);
 
-  const sumToDo = () => {
-    const filteredItems = filteredTasks.filter((task) => {
-      return task.status === "To do";
-    });
-    return filteredItems.length;
-  };
+  const filteredData = useMemo(() => {
+    const totalTasks = (status) => {
+      const filteredItems = filteredTasks.filter((task) => {
+        return task.status === status;
+      });
+      return filteredItems.length;
+    };
 
-  const sumInProgress = () => {
-    const filteredItems = filteredTasks.filter((task) => {
-      return task.status === "In progress";
-    });
-    return filteredItems.length;
-  };
-
-  const sumDone = () => {
-    const filteredItems = filteredTasks.filter((task) => {
-      return task.status === "Done";
-    });
-    return filteredItems.length;
-  };
-
-  const filteredData = [
-    { name: "To do", value: sumToDo() },
-    { name: "In progress", value: sumInProgress() },
-    { name: "Done", value: sumDone() },
-  ];
+    return [
+      { name: "To do", value: totalTasks("To Do") },
+      { name: "In progress", value: totalTasks("In progress") },
+      { name: "Done", value: totalTasks("Done") },
+    ];
+  }, [filteredTasks]);
 
   return (
     <div className={styles["container"]}>

@@ -19,29 +19,27 @@ const chartSlice = createSlice({
     setFilteredTasks(state, action) {
       state.filteredTasks = action.payload;
     },
-    filterTasks(state, action) {
-      const { filteredMonth, filteredPriority, initialTasks } = action.payload;
-
-      const tasksPerMonth = initialTasks.filter((task) => {
-        if (filteredMonth === "All") {
-          return initialTasks;
-        }
-        return filteredMonth === task.createdOn.slice(0, -9);
-      });
-
-      const tasksPerPriority = initialTasks.filter((task) => {
-        if (filteredPriority === "All") {
-          return initialTasks;
-        }
-        return filteredPriority === task.priority;
-      });
-
-      state.filteredTasks = tasksPerMonth.filter(
-        (task) => true === tasksPerPriority.some((el) => el.id === task.id)
-      );
-    },
   },
 });
+
+const filterTasksHandler = (dispatch, data) => {
+  dispatch(chartActions.setFilteredTasks(data.filteredTasks));
+};
+
+export const FilterTasks = (sendRequest, token, month, priority) => {
+  return async (dispatch) => {
+    sendRequest(
+      {
+        url: `http://localhost:5000/analitycs?month=${month}&priority=${priority}`,
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      },
+      filterTasksHandler.bind(null, dispatch)
+    );
+  };
+};
 
 export const chartActions = chartSlice.actions;
 

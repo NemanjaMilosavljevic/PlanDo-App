@@ -21,15 +21,15 @@ const KanbanColumn = ({ columnId, setHeadings, showModal }) => {
     },
   });
 
-  const renderedTasks = initialTasks.map((task) =>
-    task.status === columnId ? (
+  const renderedTasks = initialTasks.map((task) => {
+    return task.status === columnId ? (
       <ColumnItem
         task={task.id}
         key={task.id}
         id={task.id}
         title={task.title}
         priority={task.priority}
-        due={task.due.toLocaleString("en-GB", {
+        due={new Date(task.due).toLocaleString("en-GB", {
           month: "long",
           day: "2-digit",
           year: "numeric",
@@ -37,11 +37,10 @@ const KanbanColumn = ({ columnId, setHeadings, showModal }) => {
         status={task.status}
         description={task.description}
         visibleId={task.visibleId}
-        firebaseId={task.firebaseId}
         showModal={() => showModal(task.id)}
       />
-    ) : null
-  );
+    ) : null;
+  });
 
   return (
     <div
@@ -51,7 +50,7 @@ const KanbanColumn = ({ columnId, setHeadings, showModal }) => {
       {...attributes}
     >
       <h4 className={styles["heading"]}>
-        {columnId === "To do" ? (
+        {columnId === "To Do" ? (
           <FontAwesomeIcon
             icon={faRectangleList}
             style={{

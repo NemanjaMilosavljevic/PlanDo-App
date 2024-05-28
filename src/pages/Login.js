@@ -3,10 +3,10 @@ import Button from "../components/UI/Button";
 import { useEffect } from "react";
 import styles from "./Login.module.css";
 import ClipLoader from "react-spinners/ClipLoader";
-import ErrorModal from "../components/UI/ErrorModal";
+import Modal from "../components/UI/Modal";
 import useHttp from "../hooks/use-http";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import {
   logoutHandler,
   retrieveStoredToken,
@@ -30,6 +30,7 @@ const Login = () => {
     isLogin,
     enteredPasswordIsValid,
     enteredEmailIsValid,
+    isUserAdmin,
   } = auth;
 
   const loginFormIsValid = enteredPasswordIsValid && enteredEmailIsValid;
@@ -42,6 +43,10 @@ const Login = () => {
   const passwordInputHandler = (event) => {
     dispatch(authActions.passwordInput(event.target.value));
     dispatch(authActions.isPasswordValid());
+  };
+
+  const registerAsAdminHandler = (event) => {
+    dispatch(authActions.isUserAdmin(event.target.checked));
   };
 
   const emailInputBlurHandler = () => {
@@ -72,6 +77,7 @@ const Login = () => {
     const userCredentials = {
       email: enteredEmail,
       password: enteredPassword,
+      isUserAdmin: isUserAdmin,
       returnSecureToken: true,
     };
 
@@ -92,7 +98,11 @@ const Login = () => {
 
   return (
     <>
-      {error && <ErrorModal onClose={clearError}>{error}</ErrorModal>}
+      {error && (
+        <Modal onClose={clearError} type="error">
+          {error}
+        </Modal>
+      )}
       {isLoading && !error && (
         <ClipLoader
           color={"#c78437"}
@@ -100,7 +110,7 @@ const Login = () => {
           cssOverride={{
             position: "fixed",
             left: "50%",
-            top: "40%"
+            top: "40%",
           }}
           size={80}
           aria-label="Loading Spinner"
@@ -140,6 +150,20 @@ const Login = () => {
               }}
               className={styles.placeholder}
             />
+
+            {!isLogin && (
+              <label id={styles["admin-check"]}>
+                <Input
+                  input={{
+                    type: "checkbox",
+                    id: "checkbox-admin",
+                    value: isUserAdmin,
+                    onChange: registerAsAdminHandler,
+                  }}
+                />
+                register as admin
+              </label>
+            )}
             {error && <p className="error-text">{error}</p>}
             {!error && (
               <Button
@@ -152,12 +176,13 @@ const Login = () => {
               </Button>
             )}
           </form>
-          <p
+          <Link
+            to={!isLogin ? "/login" : "/register"}
             onClick={switchAuthModeHandler}
             className={styles["auth-mode-changer"]}
           >
             {!isLogin ? "Login with existing account" : "Create new account"}
-          </p>
+          </Link>
         </div>
       )}
     </>

@@ -12,23 +12,23 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import ReactDOM from "react-dom";
-import ErrorModal from "../components/UI/ErrorModal";
+import Modal from "../components/UI/Modal";
 import { useSelector, useDispatch } from "react-redux";
-import { dndActions, DragOver } from "../store/dnd-slice";
+import { dndActions, DragAction } from "../store/dnd-slice";
 import useHttp from "../hooks/use-http";
 import { modalSliceActions } from "../store/modal-slice";
-
-let initialRender = true;
+import { useNavigate } from "react-router-dom";
 
 const Kanban = () => {
-  const userId = localStorage.getItem("localId");
+  const token = localStorage.getItem("token");
+  const navigate = useNavigate();
 
   const { error, clearError, sendRequest } = useHttp();
   const dispatch = useDispatch();
   const isToggle = useSelector((state) => state.theme.switchIsToggle);
 
   const tasks = useSelector((state) => state.tasks);
-  const { initialTasks, isModifiedTask } = tasks;
+  const { initialTasks } = tasks;
 
   const dnd = useSelector((state) => state.dnd);
   const { firstColId, secondColId, thirdColId, activeItem } = dnd;
@@ -38,7 +38,7 @@ const Kanban = () => {
 
   const columnInfo = useMemo(
     () => [
-      { heading: "TO DO", columnId: "To do" },
+      { heading: "TO DO", columnId: "To Do" },
       { heading: "IN PROGRESS", columnId: "In progress" },
       { heading: "DONE", columnId: "Done" },
     ],
@@ -63,13 +63,17 @@ const Kanban = () => {
   const showModalHandler = (taskId) => {
     dispatch(modalSliceActions.getSelectedTask({ initialTasks, taskId }));
     dispatch(modalSliceActions.toggleModal());
+
+    navigate({ pathname: `/tasks/edit/${taskId}` });
   };
 
   useEffect(() => {
     if (isModalShown) {
       dispatch(modalSliceActions.setModalToActive());
+    } else {
+      navigate({ pathname: `/tasks` });
     }
-  }, [isModalShown, dispatch]);
+  }, [isModalShown, dispatch, navigate]);
 
   //Drag and Drop
 
@@ -80,8 +84,8 @@ const Kanban = () => {
     }
   };
 
-  const onDragOver = ({ active, over }) => {
-    dispatch(DragOver(active, over, sendRequest, initialTasks, userId));
+  const onDragAction = (type, { active, over }) => {
+    dispatch(DragAction(active, over, sendRequest, initialTasks, token, type));
   };
 
   const sensors = useSensors(
@@ -91,15 +95,6 @@ const Kanban = () => {
       },
     })
   );
-
-  useEffect(() => {
-    if (initialRender || isModifiedTask) {
-      initialRender = false;
-      dispatch(dndActions.setFirstColId(initialTasks));
-      dispatch(dndActions.setSecondColId(initialTasks));
-      dispatch(dndActions.setThirdColId(initialTasks));
-    }
-  }, [dispatch, initialTasks, isModifiedTask]);
 
   return (
     <div
@@ -113,7 +108,8 @@ const Kanban = () => {
       </div>
       <DndContext
         onDragStart={onDragStart}
-        onDragOver={onDragOver}
+        onDragOver={onDragAction.bind(null, "over")}
+        onDragEnd={onDragAction.bind(null, "end")}
         sensors={sensors}
       >
         <SortableContext items={firstColId}>
@@ -150,7 +146,7 @@ const Kanban = () => {
                 id={activeItem[0]?.id}
                 title={activeItem[0]?.title}
                 priority={activeItem[0]?.priority}
-                due={activeItem[0]?.due.toLocaleString("en-US", {
+                due={new Date(activeItem[0]?.due).toLocaleString("en-US", {
                   month: "long",
                   day: "2-digit",
                   year: "numeric",
@@ -165,7 +161,9 @@ const Kanban = () => {
         )}
       </DndContext>
       {!isModalShown && error && (
-        <ErrorModal onClose={clearError}>{error}</ErrorModal>
+        <Modal onClose={clearError} type="error">
+          {error}
+        </Modal>
       )}
       {isModalShown && <ModalItem onRemoveModal={removeModalHandler} />}
     </div>

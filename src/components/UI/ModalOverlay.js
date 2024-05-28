@@ -8,7 +8,7 @@ import Input from "./Input";
 import DropdownInput from "./DropdownInput";
 import Textarea from "./Textarea";
 import ConfirmModal from "./ConfirmModal";
-import ErrorModal from "./ErrorModal";
+import Modal from "./Modal";
 import { useSelector, useDispatch } from "react-redux";
 import {
   UpdateTask,
@@ -22,7 +22,7 @@ import { modalSliceActions } from "../../store/modal-slice";
 import { useEffect } from "react";
 
 const ModalOverlay = ({ onRemoveModal, className }) => {
-  const userId = localStorage.getItem("localId");
+  const token = localStorage.getItem("token");
 
   const dispatch = useDispatch();
   const initialTasks = useSelector((state) => state.tasks.initialTasks);
@@ -74,20 +74,15 @@ const ModalOverlay = ({ onRemoveModal, className }) => {
       title: enteredTitle,
       description: enteredDescription,
       priority: chosenPriority,
-      due: new Date(enteredDueDate).toLocaleString("en-US", {
-        month: "long",
-        day: "2-digit",
-        year: "numeric",
-      }),
+      due: enteredDueDate,
       status: enteredStatus,
       id: id,
       visibleId: visibleId,
       createdOn: createdOn,
-      firebaseId: firebaseId,
     };
 
     dispatch(
-      UpdateTask(updatedTask, sendRequest, initialTasks, userId, onRemoveModal)
+      UpdateTask(updatedTask, sendRequest, initialTasks, onRemoveModal, token)
     );
   };
 
@@ -98,11 +93,7 @@ const ModalOverlay = ({ onRemoveModal, className }) => {
       title: enteredTitle,
       description: enteredDescription,
       priority: chosenPriority,
-      due: new Date(enteredDueDate).toLocaleString("en-US", {
-        month: "long",
-        day: "2-digit",
-        year: "numeric",
-      }),
+      due: enteredDueDate,
       status: enteredStatus,
       id: id,
       visibleId: visibleId,
@@ -115,8 +106,8 @@ const ModalOverlay = ({ onRemoveModal, className }) => {
         deletedTask,
         sendRequest,
         initialTasks,
-        userId,
-        onRemoveModal
+        onRemoveModal,
+        token
       )
     );
     dispatch(tasksActions.closeConfirmingModalForDeletingTask());
@@ -297,7 +288,7 @@ const ModalOverlay = ({ onRemoveModal, className }) => {
       )}
       {error &&
         ReactDOM.createPortal(
-          <ErrorModal onClose={clearError}>{error}</ErrorModal>,
+          <Modal onClose={clearError}>{error}</Modal>,
           document.getElementById("confirm-modal")
         )}
     </>

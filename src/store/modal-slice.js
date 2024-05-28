@@ -10,7 +10,6 @@ const initialState = {
   id: "",
   isChecked: false,
   createdOn: "",
-  firebaseId: "",
   selectedTask: null,
   isModalShown: false,
   modalIsActive: false,
@@ -39,8 +38,14 @@ const modalSlice = createSlice({
       state.visibleId = selectedTask.visibleId;
       state.id = selectedTask.id;
       state.isChecked = selectedTask.priority === "Important" ? true : false;
-      state.createdOn = selectedTask.createdOn;
-      state.firebaseId = selectedTask.firebaseId;
+      state.createdOn = new Date(selectedTask.created_on).toLocaleString(
+        "en-US",
+        {
+          month: "long",
+          day: "2-digit",
+          year: "numeric",
+        }
+      );
     },
     toggleModal(state) {
       state.isModalShown = !state.isModalShown;

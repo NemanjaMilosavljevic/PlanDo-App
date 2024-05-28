@@ -29,7 +29,12 @@ const Navbar = () => {
   const changeAccountHandler = () => {
     dispatch(logoutHandler());
     dispatch(authActions.resetInputState());
-    navigate({ pathname: "/sign-in" });
+    dispatch(authActions.switchAuthMode());
+    navigate({ pathname: "/login" });
+  };
+
+  const openAdminPanelHandler = () => {
+    navigate({ pathname: "/admin" });
   };
 
   const signOutHandler = () => {
@@ -40,7 +45,7 @@ const Navbar = () => {
   const setNewPasswordHandler = (event) => {
     event.stopPropagation();
     dispatch(navbarActions.hideAccountSettings());
-    navigate({ pathname: "/update-password" });
+    navigate({ pathname: "/change-password" });
   };
 
   const onMouseEnterHandler = () => {
@@ -80,13 +85,13 @@ const Navbar = () => {
           )}
         </Link>
 
-        <Link to="/kanban" className={styles.link}>
+        <Link to="/tasks" className={styles.link}>
           <div className={styles.flexcont}>
             <FontAwesomeIcon icon={faTableColumns} style={{ color: "#000" }} />
           </div>
           {isShown && <span className={styles["span-text"]}>Kanban Board</span>}
         </Link>
-        <Link to="/analitics" className={styles.link}>
+        <Link to="/analitycs" className={styles.link}>
           <div className={styles.flexcont}>
             <FontAwesomeIcon
               icon={faChartLine}
@@ -119,11 +124,12 @@ const Navbar = () => {
               </li>
               <li onClick={setNewPasswordHandler}>Change password</li>
               <li onClick={changeAccountHandler}>Change account</li>
+              <li onClick={openAdminPanelHandler}>Admin panel</li>
             </ul>
           </div>
         </div>
 
-        <Link to="/sign-in" className={styles.link} onClick={signOutHandler}>
+        <Link to="/register" className={styles.link} onClick={signOutHandler}>
           <div className={styles.flexcont}>
             <FontAwesomeIcon
               icon={faArrowRightFromBracket}

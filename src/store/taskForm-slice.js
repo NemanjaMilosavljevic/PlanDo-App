@@ -5,7 +5,7 @@ const initialState = {
   enteredDescription: "",
   chosenFlag: "Not-important",
   enteredDueDate: "",
-  enteredStatus: "To do",
+  enteredStatus: "To Do",
 };
 
 const taskFormSlice = createSlice({

@@ -2,12 +2,13 @@ import styles from "./Login.module.css";
 import Input from "../components/UI/Input";
 import Button from "../components/UI/Button";
 import ClipLoader from "react-spinners/ClipLoader";
-import ErrorModal from "../components/UI/ErrorModal";
+import Modal from "../components/UI/Modal";
 import { authActions } from "../store/auth-slice";
 import { useSelector, useDispatch } from "react-redux";
 import useHttp from "../hooks/use-http";
 import { changePasswordHandler } from "../store/auth-slice";
 import { useNavigate } from "react-router-dom";
+import { usersActions } from "../store/users-slice";
 
 const ChangePassword = () => {
   const { sendRequest, isLoading, error, clearError } = useHttp();
@@ -20,6 +21,8 @@ const ChangePassword = () => {
     enteredNewPasswordIsValid,
     token,
   } = auth;
+
+  const notification = useSelector((state) => state.users.notification);
 
   const changePasswordFormIsValid = enteredNewPasswordIsValid;
 
@@ -43,12 +46,12 @@ const ChangePassword = () => {
     dispatch(authActions.newPasswordInputBlur());
 
     const newPasswordInfo = {
-      idToken: token,
       password: enteredNewPassword,
-      returnSecureToken: true,
     };
 
-    dispatch(changePasswordHandler(newPasswordInfo, sendRequest, navigate));
+    dispatch(
+      changePasswordHandler(newPasswordInfo, sendRequest, navigate, token)
+    );
   };
 
   return (
@@ -60,7 +63,7 @@ const ChangePassword = () => {
           cssOverride={{
             position: "fixed",
             left: "50%",
-            top: "40%"
+            top: "40%",
           }}
           size={80}
           aria-label="Loading Spinner"
@@ -69,8 +72,15 @@ const ChangePassword = () => {
       )}
       {!isLoading && (
         <div className={styles.wrapper}>
-          <img src="Images/logo_text.png" alt="Sign In logo" className={styles.image}/>
-          <form onSubmit={changePasswordHandlerFunction} className={styles.form}>
+          <img
+            src="Images/logo_text.png"
+            alt="Sign In logo"
+            className={styles.image}
+          />
+          <form
+            onSubmit={changePasswordHandlerFunction}
+            className={styles.form}
+          >
             {newPasswordInputIsInvalid && (
               <p className="invalid-input">
                 *Password requires minimum 6 characters
@@ -87,7 +97,19 @@ const ChangePassword = () => {
               className={styles.placeholder}
             />
 
-            {error && <ErrorModal onClose={clearError}>{error}</ErrorModal>}
+            {error && (
+              <Modal onClose={clearError} type="error">
+                {error}
+              </Modal>
+            )}
+            {notification && (
+              <Modal
+                onClose={() => dispatch(usersActions.resetNotification())}
+                type="notification"
+              >
+                {notification}
+              </Modal>
+            )}
             {!error && (
               <Button className={styles.button} button={{ type: "submit" }}>
                 Change Password

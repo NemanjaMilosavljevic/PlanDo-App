@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { usersActions } from "./users-slice";
 
 const initialState = {
   initialTasks: [],
@@ -44,12 +45,10 @@ const tasksSlice = createSlice({
       state.isModifiedTask = false;
     },
     retrieveInitialTasks(state, action) {
-      const tasks = action.payload;
-      state.initialTasks = tasks;
+      state.initialTasks = action.payload;
     },
     addTask(state, action) {
-      const newTask = action.payload;
-      state.initialTasks.push(newTask);
+      state.initialTasks.push(action.payload);
     },
     updateTask(state, action) {
       const { initialTasks, updatedTask } = action.payload;
@@ -66,7 +65,7 @@ const tasksSlice = createSlice({
       const { initialTasks, deletedTask } = action.payload;
 
       let updatedTasks = initialTasks.filter(
-        (item) => item.firebaseId !== deletedTask.firebaseId
+        (item) => item.id !== deletedTask.id
       );
 
       state.initialTasks = updatedTasks;
@@ -75,7 +74,6 @@ const tasksSlice = createSlice({
 });
 
 // Sending http request for adding new task
-
 export const closeConfirmModal = (payload) => {
   return (dispatch) => {
     if (payload?.type === "taskForm") {
@@ -86,17 +84,20 @@ export const closeConfirmModal = (payload) => {
     } else if (payload?.type === "modal") {
       setTimeout(() => {
         dispatch(tasksActions.closeConfirmingModalForDeletingTask());
+        dispatch(usersActions.closeConfirmingModalForDeletingUser());
       }, 1000);
       dispatch(tasksActions.isTaskNotDeleted());
+      dispatch(usersActions.isUserNotDeleted());
     }
   };
 };
 
-const fetchTasksOnCreate = (taskData, dispatch, taskObj) => {
-  const generatedId = taskObj.name;
-  const createdTask = { ...taskData, firebaseId: generatedId };
-  dispatch(tasksActions.addTask(createdTask));
+const fetchTasksOnCreate = (taskData, dispatch, data) => {
+  // add id to created task
+  const id = data.taskId;
+  const newTask = { ...taskData, id };
 
+  dispatch(tasksActions.addTask(newTask));
   dispatch(tasksActions.confirmModalIsActive());
 
   setTimeout(() => {
@@ -104,13 +105,14 @@ const fetchTasksOnCreate = (taskData, dispatch, taskObj) => {
   }, 3000);
 };
 
-export const CreateTask = (taskData, sendRequest, userId) => {
+export const CreateTask = (taskData, sendRequest, token) => {
   return async (dispatch) => {
     sendRequest(
       {
-        url: `https://plan-do-95624-default-rtdb.europe-west1.firebasedatabase.app/users/${userId}/tasks.json`,
+        url: `http://localhost:5000/create-task`,
         method: "POST",
         headers: {
+          Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
         body: taskData,
@@ -137,16 +139,18 @@ export const UpdateTask = (
   updatedTask,
   sendRequest,
   initialTasks,
-  userId,
-  onRemoveModal
+  onRemoveModal,
+  token
 ) => {
   return async (dispatch) => {
+    dispatch(tasksActions.isTaskNotUpdated());
     sendRequest(
       {
-        url: `https://plan-do-95624-default-rtdb.europe-west1.firebasedatabase.app/users/${userId}/tasks/${updatedTask.firebaseId}/.json`,
+        url: `http://localhost:5000/tasks/edit/${updatedTask.id}`,
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: updatedTask,
       },
@@ -162,7 +166,6 @@ export const UpdateTask = (
 };
 
 // Sending http request for deleting task
-
 const fetchTasksOnDelete = (
   deletedTask,
   dispatch,
@@ -177,14 +180,17 @@ export const deleteTaskHandler = (
   deletedTask,
   sendRequest,
   initialTasks,
-  userId,
-  onRemoveModal
+  onRemoveModal,
+  token
 ) => {
   return async (dispatch) => {
     sendRequest(
       {
-        url: `https://plan-do-95624-default-rtdb.europe-west1.firebasedatabase.app/users/${userId}/tasks/${deletedTask.firebaseId}/.json`,
+        url: `http://localhost:5000/tasks/edit/${deletedTask.id}`,
         method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       },
       fetchTasksOnDelete.bind(
         null,

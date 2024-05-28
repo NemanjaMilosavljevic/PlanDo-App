@@ -14,7 +14,7 @@ import { navbarActions } from "../../store/navbar-slice";
 let initialRender = true;
 
 const Header = () => {
-  const userId = localStorage.getItem("localId");
+  const userId = localStorage.getItem("userId");
   const theme = useSelector((state) => state.theme);
   const { switchIsToggle, usersModePreference } = theme;
   const dispatch = useDispatch();

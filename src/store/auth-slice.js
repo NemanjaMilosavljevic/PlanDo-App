@@ -1,14 +1,16 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { usersActions } from "./users-slice";
 
 let logoutTimer;
 
 //Auto logout whene token expires and retrieving stored token
 
-const calculateRemainingTime = (expTime) => {
+const calculateRemainingTime = (expDate) => {
   const currentTime = new Date().getTime();
-  const adjRemainingTime = new Date(expTime).getTime();
+  const adjRemainingTime = new Date(expDate).getTime();
 
   const remainingTime = adjRemainingTime - currentTime;
+
   return remainingTime;
 };
 
@@ -22,29 +24,42 @@ export const retrieveStoredToken = () => {
     localStorage.removeItem("expirationTime");
     localStorage.removeItem("token");
     localStorage.removeItem("userEmail");
-    localStorage.removeItem("localId");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("role");
     return null;
   }
 
   return { token: storedToken, duration: remainingTime };
 };
 
-export const logoutHandler = () => {
+export const logoutHandler = (id) => {
   return (dispatch) => {
-    dispatch(authActions.logout());
+    if (id) {
+      const currentUser = localStorage.getItem("userId");
+      if (id === currentUser) {
+        dispatch(authActions.logout({ id, currentUser }));
+        localStorage.removeItem("token");
+        localStorage.removeItem("userEmail");
+        localStorage.removeItem("userId");
+        localStorage.removeItem("expirationTime");
+        localStorage.removeItem("role");
+        return;
+      }
+      return;
+    }
 
+    dispatch(authActions.logout());
     localStorage.removeItem("token");
     localStorage.removeItem("userEmail");
-    localStorage.removeItem("localId");
+    localStorage.removeItem("userId");
     localStorage.removeItem("expirationTime");
+    localStorage.removeItem("role");
 
     if (logoutTimer) {
       clearTimeout(logoutTimer);
     }
   };
 };
-
-// Initial state
 
 const initialState = {
   token: retrieveStoredToken()?.token,
@@ -62,6 +77,7 @@ const initialState = {
   passwordInputIsInvalid: false,
   enteredNewPasswordIsValid: false,
   newPasswordInputIsInvalid: false,
+  isUserAdmin: false,
 };
 
 const authSlice = createSlice({
@@ -125,30 +141,41 @@ const authSlice = createSlice({
       state.token = action.payload;
       state.isUserLoggedIn = true;
     },
-    logout(state) {
-      state.token = null;
-      state.isUserLoggedIn = false;
+    logout(state, action) {
+      if (!action.payload) {
+        state.token = null;
+        state.isUserLoggedIn = false;
+        return;
+      }
+      const { id, currentUser } = action.payload;
+
+      if (id === currentUser) {
+        state.token = null;
+        state.isUserLoggedIn = false;
+      }
+    },
+    isUserAdmin(state, action) {
+      state.isUserAdmin = action.payload;
     },
   },
 });
 
-// Handling login
-
 const authenticateUser = (navigate, dispatch, authData) => {
-  dispatch(authActions.login(authData.idToken));
+  dispatch(authActions.login(authData.token));
   dispatch(authActions.resetInputState());
 
   // Setting timer for auto logout
-  const expirationTime = new Date(
-    new Date().getTime() + +authData.expiresIn * 1000
+  const expirationDate = new Date(
+    new Date().getTime() + authData.expiresIn * 1000
   );
-  const remainingTime = calculateRemainingTime(expirationTime);
+  const remainingTime = calculateRemainingTime(expirationDate);
   logoutTimer = setTimeout(logoutHandler, remainingTime);
 
-  localStorage.setItem("token", authData.idToken);
-  localStorage.setItem("expirationTime", expirationTime);
+  localStorage.setItem("token", authData.token);
+  localStorage.setItem("expirationTime", expirationDate);
   localStorage.setItem("userEmail", authData.email);
-  localStorage.setItem("localId", authData.localId);
+  localStorage.setItem("userId", authData.userId);
+  localStorage.setItem("role", authData.role);
   navigate({ pathname: "/home" });
   window.location.reload();
 };
@@ -163,11 +190,9 @@ export const loginHandler = (
     let urlString;
 
     if (isLogin) {
-      // firebase endpoint for login existing user
-      urlString = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${process.env.REACT_APP_API_KEY}`;
+      urlString = `http://localhost:5000/login`;
     } else {
-      // firebase endpoint for signup new user
-      urlString = `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${process.env.REACT_APP_API_KEY}`;
+      urlString = `http://localhost:5000/register`;
     }
 
     sendRequest(
@@ -179,32 +204,37 @@ export const loginHandler = (
         },
         body: userCredentials,
       },
-      authenticateUser.bind(null, navigate, dispatch)
+      isLogin
+        ? authenticateUser.bind(null, navigate, dispatch)
+        : () => {
+            dispatch(authActions.resetInputState());
+            dispatch(authActions.switchAuthMode());
+            navigate({ pathname: "/login" });
+          }
     );
   };
 };
 
-// Handling password change
-
-const authenticateChangePassword = (navigate, dispatch) => {
+const authenticateChangePassword = (navigate, dispatch, data) => {
   dispatch(authActions.resetInputState());
-  alert("Succesfully changed password!");
+  dispatch(usersActions.setNotification(data.message));
   navigate({ pathname: "/home" });
 };
 
 export const changePasswordHandler = (
   newPasswordInfo,
   sendRequest,
-  navigate
+  navigate,
+  token
 ) => {
   return (dispatch) => {
     sendRequest(
-      // firebase endpoint for changing password
       {
-        url: `https://identitytoolkit.googleapis.com/v1/accounts:update?key=${process.env.REACT_APP_API_KEY}`,
+        url: `http://localhost:5000/change-password`,
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: newPasswordInfo,
       },

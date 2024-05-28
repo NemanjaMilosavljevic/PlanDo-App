@@ -7,7 +7,7 @@ import Textarea from "../components/UI/Textarea";
 import DropdownInput from "../components/UI/DropdownInput";
 import ConfirmModal from "../components/UI/ConfirmModal";
 import ClipLoader from "react-spinners/ClipLoader";
-import ErrorModal from "../components/UI/ErrorModal";
+import Modal from "../components/UI/Modal";
 import useHttp from "../hooks/use-http";
 import { useSelector, useDispatch } from "react-redux";
 import { tasksActions, CreateTask } from "../store/tasks-slice";
@@ -15,7 +15,7 @@ import { taskFormActions } from "../store/taskForm-slice";
 import { closeConfirmModal } from "../store/tasks-slice";
 
 const TaskForm = () => {
-  const userId = localStorage.getItem("localId");
+  const token = localStorage.getItem("token");
 
   const { isLoading, error, sendRequest, clearError } = useHttp();
   const dispatch = useDispatch();
@@ -73,25 +73,15 @@ const TaskForm = () => {
       title: enteredTitle,
       description: enteredDescription,
       priority: chosenFlag,
-      due: new Date(enteredDueDate).toLocaleString("en-GB", {
-        month: "long",
-        day: "2-digit",
-        year: "numeric",
-      }),
+      due: enteredDueDate,
       status: enteredStatus,
-      id: Math.floor(Math.random() * 10000000 + 1),
       visibleId:
         initialTasks.length === 0
           ? "TASK-1"
           : "TASK-" + (visibleIdHandler() + 1),
-      createdOn: new Date().toLocaleString("en-US", {
-        month: "long",
-        day: "2-digit",
-        year: "numeric",
-      }),
     };
 
-    dispatch(CreateTask(taskData, sendRequest, userId));
+    dispatch(CreateTask(taskData, sendRequest, token));
 
     dispatch(
       taskFormActions.setToInitialState({
@@ -142,7 +132,7 @@ const TaskForm = () => {
           cssOverride={{
             position: "fixed",
             left: "50%",
-            top: "40%"
+            top: "40%",
           }}
           size={80}
           aria-label="Loading Spinner"
@@ -207,7 +197,11 @@ const TaskForm = () => {
                 <option value="Done">Done</option>
               </DropdownInput>
 
-              {error && <ErrorModal onClose={clearError}>{error}</ErrorModal>}
+              {error && (
+                <Modal onClose={clearError} type="error">
+                  {error}
+                </Modal>
+              )}
               {!error && (
                 <Button button={{ type: "submit" }}>Create task</Button>
               )}

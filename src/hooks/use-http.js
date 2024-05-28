@@ -11,6 +11,7 @@ const useHttp = () => {
   const sendRequest = useCallback(async (requestConfig, applyData) => {
     setIsLoading(true);
     setError(null);
+
     try {
       const response = await fetch(requestConfig.url, {
         method: requestConfig.method ? requestConfig.method : "GET",
@@ -18,18 +19,14 @@ const useHttp = () => {
         body: requestConfig.body ? JSON.stringify(requestConfig.body) : null,
       });
 
-      if (!response.ok) {
-        throw new Error(
-          `Error message: ${
-            response.statusText || "Something went wrong!"
-          }; Status Code: ${response.status}`
-        );
+      const data = await response.json();
+
+      if (data.errorMessage) {
+        throw new Error(`${data.errorMessage}`);
       }
 
-      const data = await response.json();
       applyData(data);
     } catch (err) {
-      console.log(err);
       setError(err.message || "Something went wrong!");
     }
     setIsLoading(false);

@@ -7,67 +7,93 @@ import Ilustration from "./components/Ilustrations/Ilustration";
 import Kanban from "./pages/Kanban";
 import IlustrationBackground from "./pages/IlustrationBackground";
 import AnalyticsCard from "./pages/AnalitycsCard";
-import PageNotFound from "./pages/PageNotFound";
-import Login from "./pages/Login";
-import styles from "./components/Ilustrations/Ilustration.module.css";
-import { Route, Routes, Navigate, NavLink } from "react-router-dom";
-import ChangePassword from "./pages/ChangePassword";
-import { useDispatch, useSelector } from "react-redux";
-import useHttp from "./hooks/use-http";
-import { tasksActions } from "./store/tasks-slice";
 import LandingPage from "./components/LandingPage/LandingPage";
+import Login from "./pages/Login";
+import PageNotFound from "./pages/PageNotFound";
+import ChangePassword from "./pages/ChangePassword";
+import {
+  Route,
+  Routes,
+  Navigate,
+  NavLink,
+  useLocation,
+} from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { tasksActions } from "./store/tasks-slice";
+import useHttp from "./hooks/use-http";
+import styles from "./components/Ilustrations/Ilustration.module.css";
+import AdminPanel from "./pages/AdminPanel";
+import { usersActions } from "../src/store/users-slice";
+import Modal from "./components/UI/Modal";
+import { logoutHandler } from "./store/auth-slice";
+import socket from "./socket";
 
 let initialRender = true;
 
 const App = () => {
-  const userId = localStorage.getItem("localId");
+  const token = localStorage.getItem("token");
+  const role = localStorage.getItem("role");
   const { isLoading, sendRequest } = useHttp();
   const dispatch = useDispatch();
+  const location = useLocation();
+  const path = location.pathname;
 
   const isModifiedTask = useSelector((state) => state.tasks.isModifiedTask);
   const isUserLoggedIn = useSelector((state) => state.auth.isUserLoggedIn);
+  const isLogin = useSelector((state) => state.auth.isLogin);
   const navbarAndHeaderIsShown = useSelector(
     (state) => state.navbar.navbarAndHeaderIsShown
   );
   const isToggle = useSelector((state) => state.theme.switchIsToggle);
+  const notification = useSelector((state) => state.users.notification);
 
   useEffect(() => {
-    if (initialRender || isModifiedTask) {
+    socket.on("users", (data) => {
+      if (data.action === "delete") {
+        dispatch(usersActions.delete(data.deletedUser));
+        dispatch(usersActions.setNotification(data.message));
+        dispatch(logoutHandler(data.deletedUser));
+      }
+      if (data.action === "create") {
+        dispatch(usersActions.addUser(data.user));
+        dispatch(usersActions.setNotification(data.message));
+      }
+    });
+  }, [dispatch]);
+
+  useEffect(() => {
+    if ((initialRender && path.includes("/tasks")) || isModifiedTask) {
       initialRender = false;
 
-      const fetchTasksHandler = (taskObj) => {
-        const initialTasks = [];
-
-        for (const key in taskObj) {
-          initialTasks.push({
-            title: taskObj[key]?.title,
-            description: taskObj[key]?.description,
-            priority: taskObj[key]?.priority,
-            due: taskObj[key]?.due,
-            status: taskObj[key]?.status,
-            id: taskObj[key]?.id,
-            visibleId: taskObj[key]?.visibleId,
-            createdOn: taskObj[key]?.createdOn,
-            firebaseId: key,
-          });
-        }
-
-        dispatch(tasksActions.retrieveInitialTasks(initialTasks));
+      const fetchTasksHandler = (fetchedTasks) => {
+        dispatch(tasksActions.retrieveInitialTasks(fetchedTasks));
       };
 
       sendRequest(
         {
-          url: `https://plan-do-95624-default-rtdb.europe-west1.firebasedatabase.app/users/${userId}/tasks.json`,
+          url: `http://localhost:5000/tasks`,
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
         },
         fetchTasksHandler
       );
     }
-  }, [sendRequest, dispatch, isModifiedTask, userId]);
+  }, [sendRequest, dispatch, isModifiedTask, token, path]);
 
   return (
     <>
       {isUserLoggedIn && navbarAndHeaderIsShown && <Header />}
       {isUserLoggedIn && navbarAndHeaderIsShown && <Navbar />}
+      {notification && (
+        <Modal
+          onClose={() => dispatch(usersActions.resetNotification())}
+          type="notification"
+        >
+          {notification}
+        </Modal>
+      )}
 
       <Routes>
         (<Route path="/landing-page" element={<LandingPage />}></Route>)
@@ -80,17 +106,26 @@ const App = () => {
             path="/home"
           ></Route>
         )}
+        {role === "admin" && (
+          <Route element={<AdminPanel />} path="/admin"></Route>
+        )}
+        {role === "admin" && (
+          <Route element={<AdminPanel />} path="/admin/:userId"></Route>
+        )}
         {isUserLoggedIn && (
           <Route element={<TaskForm />} path="/create-task"></Route>
         )}
-        {isUserLoggedIn && <Route element={<Kanban />} path="/kanban"></Route>}
+        {isUserLoggedIn && <Route element={<Kanban />} path="/tasks"></Route>}
         {isUserLoggedIn && (
-          <Route element={<AnalyticsCard />} path="/analitics"></Route>
+          <Route element={<Kanban />} path="/tasks/edit/:taskId"></Route>
+        )}
+        {isUserLoggedIn && (
+          <Route element={<AnalyticsCard />} path="/analitycs"></Route>
         )}
         {!isUserLoggedIn ? (
           <Route
             path="/"
-            element={<Navigate to="/sign-in" />}
+            element={<Navigate to="/register" />}
             replace={true}
           ></Route>
         ) : (
@@ -101,15 +136,16 @@ const App = () => {
           ></Route>
         )}
         {isUserLoggedIn && (
-          <Route path="/update-password" element={<ChangePassword />}></Route>
+          <Route path="/change-password" element={<ChangePassword />}></Route>
         )}
-        <Route path="/sign-in" element={<Login />}></Route>
+        <Route path="/register" element={<Login />}></Route>
+        {isLogin && <Route path="/login" element={<Login />}></Route>}
         {isUserLoggedIn ? (
           <Route path="*" element={<PageNotFound />}></Route>
         ) : (
           <Route
             path="*"
-            element={<Navigate to="/sign-in" />}
+            element={<Navigate to="/register" />}
             replace={true}
           ></Route>
         )}

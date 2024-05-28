@@ -16,7 +16,7 @@ const dndSlice = createSlice({
     setFirstColId(state, actions) {
       const initialTasks = actions.payload;
       state.firstColId = initialTasks
-        .filter((task) => task.status === "To do")
+        .filter((task) => task.status === "To Do")
         .map((task) => task.id);
     },
     setSecondColId(state, actions) {
@@ -37,7 +37,14 @@ const dndSlice = createSlice({
   },
 });
 
-export const DragOver = (active, over, sendRequest, initialTasks, userId) => {
+export const DragAction = (
+  active,
+  over,
+  sendRequest,
+  initialTasks,
+  token,
+  type
+) => {
   return (dispatch) => {
     if (!over) return;
 
@@ -64,17 +71,32 @@ export const DragOver = (active, over, sendRequest, initialTasks, userId) => {
       const activeTask = initialTasks[activeIndex];
       const overTask = initialTasks[overIndex];
 
-      const updatedInitialTasks = initialTasks.map((item) => {
-        if (item.id === activeTask.id) {
-          return { ...activeTask, status: overTask.status };
-        } else {
-          return { ...item };
-        }
-      });
+      if (type === "end") {
+        const updatedInitialTasks = initialTasks.map((item) => {
+          if (item.id === activeTask.id) {
+            return { ...activeTask, status: overTask.status };
+          } else {
+            return { ...item };
+          }
+        });
 
-      updatedArray = arrayMove(updatedInitialTasks, activeIndex, overIndex);
+        updatedArray = arrayMove(updatedInitialTasks, activeIndex, overIndex);
+        const tasksWithOrderIndex = updatedArray.map((task, i) => {
+          return { id: task.id, orderIndex: i };
+        });
 
-      dispatch(DndRequestHandler(sendRequest, updatedArray, userId));
+        dispatch(tasksActions.retrieveInitialTasks(updatedArray));
+
+        dispatch(
+          DndRequestHandler(
+            sendRequest,
+            tasksWithOrderIndex,
+            token,
+            activeTask,
+            overTask.status
+          )
+        );
+      }
     }
 
     //Dropping task over a column
@@ -88,47 +110,57 @@ export const DragOver = (active, over, sendRequest, initialTasks, userId) => {
 
       const task = initialTasks[activeIndex];
 
-      const updatedInitialTasks = initialTasks.map((item) => {
-        if (item.id === task.id) {
-          return { ...task, status: overId };
-        } else {
-          return { ...item };
-        }
-      });
+      if (type === "end") {
+        const updatedInitialTasks = initialTasks.map((item) => {
+          if (item.id === task.id) {
+            return { ...task, status: overId };
+          } else {
+            return { ...item };
+          }
+        });
+        updatedArray = arrayMove(updatedInitialTasks, activeIndex, activeIndex);
 
-      updatedArray = arrayMove(updatedInitialTasks, activeIndex, activeIndex);
+        const tasksWithOrderIndex = updatedArray.map((task, i) => {
+          return { id: task.id, orderIndex: i };
+        });
 
-      dispatch(DndRequestHandler(sendRequest, updatedArray, userId));
+        dispatch(tasksActions.retrieveInitialTasks(updatedArray));
+
+        dispatch(
+          DndRequestHandler(
+            sendRequest,
+            tasksWithOrderIndex,
+            token,
+            task,
+            overId
+          )
+        );
+      }
     }
   };
 };
 
-export const DndRequestHandler = (sendRequest, updatedArray, userId) => {
+export const DndRequestHandler = (
+  sendRequest,
+  tasksWithOrderIndex,
+  token,
+  updatedTask,
+  updatedStatus
+) => {
   return async (dispatch) => {
-    dispatch(tasksActions.isTaskNotUpdated());
-
     sendRequest(
       {
-        url: `https://plan-do-95624-default-rtdb.europe-west1.firebasedatabase.app/users/${userId}/tasks.json`,
-        method: "PUT",
+        url: `http://localhost:5000/tasks`,
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-        body: updatedArray,
+        body: { updatedTask, status: updatedStatus, tasksWithOrderIndex },
       },
-      dragAndDropUpdate.bind(null, dispatch)
+      () => {}
     );
-    dispatch(tasksActions.isTaskUpdated());
   };
-};
-
-const dragAndDropUpdate = (dispatch, data) => {
-  // update firebaseID
-  const latestData = data.map((task, index) => {
-    return { ...task, firebaseId: index };
-  });
-
-  dispatch(tasksActions.retrieveInitialTasks(latestData));
 };
 
 export const dndActions = dndSlice.actions;

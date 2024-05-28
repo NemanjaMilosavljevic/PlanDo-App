@@ -3,15 +3,19 @@ import DropdownInput from "../UI/DropdownInput";
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { chartActions } from "../../store/chart-slice";
-import { tasksActions } from "../../store/tasks-slice";
+import { FilterTasks } from "../../store/chart-slice";
+import useHttp from "../../hooks/use-http";
 
 const FilterCard = () => {
+  const token = localStorage.getItem("token");
+  const { sendRequest } = useHttp();
+
   const dispatch = useDispatch();
   const chart = useSelector((state) => state.chart);
   const { filteredMonth, filteredPriority } = chart;
 
   const tasks = useSelector((state) => state.tasks);
-  const { isModifiedTask, initialTasks } = tasks;
+  const { initialTasks } = tasks;
 
   const filterMonthHandler = (event) => {
     dispatch(chartActions.setFilterMonth(event.target.value));
@@ -22,24 +26,14 @@ const FilterCard = () => {
   };
 
   useEffect(() => {
-    dispatch(
-      chartActions.filterTasks({
-        initialTasks,
-        filteredMonth,
-        filteredPriority,
-      })
-    );
-  }, [dispatch, filteredPriority, filteredMonth, initialTasks]);
+    dispatch(FilterTasks(sendRequest, token, filteredMonth, filteredPriority));
+  }, [dispatch, sendRequest, token, filteredMonth, filteredPriority]);
 
   useEffect(() => {
     dispatch(chartActions.setFilterMonth("All"));
     dispatch(chartActions.setFilterPriority("All"));
     dispatch(chartActions.setFilteredTasks(initialTasks));
-
-    return () => {
-      dispatch(tasksActions.isTaskNotUpdated());
-    };
-  }, [initialTasks, isModifiedTask, dispatch]);
+  }, [initialTasks, dispatch]);
 
   return (
     <div className={styles["filter-wrapper"]}>
@@ -53,18 +47,18 @@ const FilterCard = () => {
         }}
       >
         <option value="All">Month</option>
-        <option value="January">January</option>
-        <option value="February">February</option>
-        <option value="March">March</option>
-        <option value="April">April</option>
-        <option value="May">May</option>
-        <option value="June">June</option>
-        <option value="July">July</option>
-        <option value="August">August</option>
-        <option value="September">September</option>
-        <option value="October">October</option>
-        <option value="November">November</option>
-        <option value="December">December</option>
+        <option value="1">January</option>
+        <option value="2">February</option>
+        <option value="3">March</option>
+        <option value="4">April</option>
+        <option value="5">May</option>
+        <option value="6">June</option>
+        <option value="7">July</option>
+        <option value="8">August</option>
+        <option value="9">September</option>
+        <option value="10">October</option>
+        <option value="11">November</option>
+        <option value="12">December</option>
       </DropdownInput>
 
       <DropdownInput
