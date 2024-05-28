@@ -106,8 +106,12 @@ const App = () => {
             path="/home"
           ></Route>
         )}
-        <Route element={<AdminPanel />} path="/admin"></Route>
-        <Route element={<AdminPanel />} path="/admin/:userId"></Route>
+        {role === "admin" && (
+          <Route element={<AdminPanel />} path="/admin"></Route>
+        )}
+        {role === "admin" && (
+          <Route element={<AdminPanel />} path="/admin/:userId"></Route>
+        )}
         {isUserLoggedIn && (
           <Route element={<TaskForm />} path="/create-task"></Route>
         )}
