@@ -1,7 +1,7 @@
 .wrapper {
   display: flex;
   flex-direction: column;
-  width: 30%;
+  width: 35%;
   margin: auto;
 }
 
@@ -29,7 +29,6 @@
 }
 
 .auth-mode-changer {
-  font-size: 1rem;
   color: var(--color-sub-heading);
   text-align: center;
 }
@@ -41,10 +40,6 @@
 
 .image {
   margin-top: 2rem;
-}
-
-#admin-check {
-  font-size: 0.8rem;
 }
 
 @media (min-width: 1400px) {

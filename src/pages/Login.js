@@ -176,13 +176,12 @@ const Login = () => {
               </Button>
             )}
           </form>
-          <Link
-            to={!isLogin ? "/login" : "/register"}
+          <p
             onClick={switchAuthModeHandler}
             className={styles["auth-mode-changer"]}
           >
             {!isLogin ? "Login with existing account" : "Create new account"}
-          </Link>
+          </p>
         </div>
       )}
     </>
