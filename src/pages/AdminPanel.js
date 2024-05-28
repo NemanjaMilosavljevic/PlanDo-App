@@ -17,6 +17,7 @@ let initialRender = true;
 const AdminPanel = () => {
   const { error, clearError, sendRequest } = useHttp();
   const token = localStorage.getItem("token");
+  const role = localStorage.getItem("role");
   const dispatch = useDispatch();
   const {
     users,
@@ -52,7 +53,11 @@ const AdminPanel = () => {
   }, [isModalOpenForDeletingUser, dispatch]);
 
   useEffect(() => {
-    if ((initialRender && path.includes("/admin")) || notification) {
+    if (
+      (initialRender && path.includes("/admin")) ||
+      (path.includes("/admin") && role !== "admin") ||
+      notification
+    ) {
       initialRender = false;
 
       const fetchUsersHandler = (fetchedUsers) => {
@@ -70,7 +75,7 @@ const AdminPanel = () => {
         fetchUsersHandler
       );
     }
-  }, [sendRequest, dispatch, token, path, notification]);
+  }, [sendRequest, dispatch, token, path, role, notification]);
 
   return (
     <>
@@ -119,51 +124,53 @@ const AdminPanel = () => {
           {notification}
         </Modal>
       )}
-      <div className={classes.wrapper}>
-        <table className={classes.table}>
-          <thead>
-            <tr>
-              <th scope="col" style={{ width: "10%" }}>
-                ID
-              </th>
-              <th scope="col" style={{ width: "40%" }}>
-                Email
-              </th>
-              <th scope="col" style={{ width: "20%" }}>
-                Role
-              </th>
-              <th scope="col" style={{ width: "30%" }}>
-                Delete
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((user) => {
-              return (
-                <tr key={user.id} style={{ height: "70px" }}>
-                  <td>{user.id}</td>
-                  <td>{user.email}</td>
-                  <td>{user.role}</td>
-                  <td>
-                    <Button
-                      className={classes["delete-button"]}
-                      button={{
-                        onClick: confirmDeletingTaskHandler.bind(
-                          null,
-                          user.id,
-                          user.role
-                        ),
-                      }}
-                    >
-                      Delete
-                    </Button>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+      {role === "admin" && (
+        <div className={classes.wrapper}>
+          <table className={classes.table}>
+            <thead>
+              <tr>
+                <th scope="col" style={{ width: "10%" }}>
+                  ID
+                </th>
+                <th scope="col" style={{ width: "40%" }}>
+                  Email
+                </th>
+                <th scope="col" style={{ width: "20%" }}>
+                  Role
+                </th>
+                <th scope="col" style={{ width: "30%" }}>
+                  Delete
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {users.map((user) => {
+                return (
+                  <tr key={user.id} style={{ height: "70px" }}>
+                    <td>{user.id}</td>
+                    <td>{user.email}</td>
+                    <td>{user.role}</td>
+                    <td>
+                      <Button
+                        className={classes["delete-button"]}
+                        button={{
+                          onClick: confirmDeletingTaskHandler.bind(
+                            null,
+                            user.id,
+                            user.role
+                          ),
+                        }}
+                      >
+                        Delete
+                      </Button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
     </>
   );
 };
