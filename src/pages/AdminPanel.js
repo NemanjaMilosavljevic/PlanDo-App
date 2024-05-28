@@ -61,7 +61,7 @@ const AdminPanel = () => {
 
       sendRequest(
         {
-          url: `http://localhost:5000/admin`,
+          url: `${process.env.REACT_APP_RESTAPI_ORIGIN}/admin`,
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",

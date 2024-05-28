@@ -190,9 +190,9 @@ export const loginHandler = (
     let urlString;
 
     if (isLogin) {
-      urlString = `http://localhost:5000/login`;
+      urlString = `${process.env.REACT_APP_RESTAPI_ORIGIN}/login`;
     } else {
-      urlString = `http://localhost:5000/register`;
+      urlString = `${process.env.REACT_APP_RESTAPI_ORIGIN}/register`;
     }
 
     sendRequest(
@@ -230,7 +230,7 @@ export const changePasswordHandler = (
   return (dispatch) => {
     sendRequest(
       {
-        url: `http://localhost:5000/change-password`,
+        url: `${process.env.REACT_APP_RESTAPI_ORIGIN}/change-password`,
         method: "POST",
         headers: {
           "Content-Type": "application/json",

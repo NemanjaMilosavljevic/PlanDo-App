@@ -71,7 +71,7 @@ const App = () => {
 
       sendRequest(
         {
-          url: `http://localhost:5000/tasks`,
+          url: `${process.env.REACT_APP_RESTAPI_ORIGIN}/tasks`,
           headers: {
             Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",

@@ -30,7 +30,7 @@ export const FilterTasks = (sendRequest, token, month, priority) => {
   return async (dispatch) => {
     sendRequest(
       {
-        url: `http://localhost:5000/analitycs?month=${month}&priority=${priority}`,
+        url: `${process.env.REACT_APP_RESTAPI_ORIGIN}/analitycs?month=${month}&priority=${priority}`,
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",

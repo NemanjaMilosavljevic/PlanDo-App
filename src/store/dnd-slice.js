@@ -150,7 +150,7 @@ export const DndRequestHandler = (
   return async (dispatch) => {
     sendRequest(
       {
-        url: `http://localhost:5000/tasks`,
+        url: `${process.env.REACT_APP_RESTAPI_ORIGIN}/tasks`,
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

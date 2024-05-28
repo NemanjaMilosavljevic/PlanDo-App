@@ -109,7 +109,7 @@ export const CreateTask = (taskData, sendRequest, token) => {
   return async (dispatch) => {
     sendRequest(
       {
-        url: `http://localhost:5000/create-task`,
+        url: `${process.env.REACT_APP_RESTAPI_ORIGIN}/create-task`,
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -146,7 +146,7 @@ export const UpdateTask = (
     dispatch(tasksActions.isTaskNotUpdated());
     sendRequest(
       {
-        url: `http://localhost:5000/tasks/edit/${updatedTask.id}`,
+        url: `${process.env.REACT_APP_RESTAPI_ORIGIN}/tasks/edit/${updatedTask.id}`,
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -186,7 +186,7 @@ export const deleteTaskHandler = (
   return async (dispatch) => {
     sendRequest(
       {
-        url: `http://localhost:5000/tasks/edit/${deletedTask.id}`,
+        url: `${process.env.REACT_APP_RESTAPI_ORIGIN}/tasks/edit/${deletedTask.id}`,
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,

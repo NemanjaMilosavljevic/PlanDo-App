@@ -50,7 +50,7 @@ export const deleteUser = (userId, role, sendRequest, token) => {
   return async (dispatch) => {
     sendRequest(
       {
-        url: `http://localhost:5000/admin/${userId}`,
+        url: `${process.env.REACT_APP_RESTAPI_ORIGIN}/admin/${userId}`,
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
