@@ -32,7 +32,6 @@ let initialRender = true;
 
 const App = () => {
   const token = localStorage.getItem("token");
-  const role = localStorage.getItem("role");
   const { isLoading, sendRequest } = useHttp();
   const dispatch = useDispatch();
   const location = useLocation();
