@@ -1,22 +1,14 @@
 import Input from "../components/UI/Input";
 import Button from "../components/UI/Button";
-import { useEffect } from "react";
 import styles from "./Login.module.css";
 import ClipLoader from "react-spinners/ClipLoader";
 import Modal from "../components/UI/Modal";
 import useHttp from "../hooks/use-http";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import {
-  logoutHandler,
-  retrieveStoredToken,
-  loginHandler,
-  authActions,
-} from "../store/auth-slice";
+import { loginHandler, authActions } from "../store/auth-slice";
 
 const Login = () => {
-  const tokenData = retrieveStoredToken();
-
   const { sendRequest, isLoading, error, clearError } = useHttp();
   const navigate = useNavigate();
 
@@ -83,18 +75,6 @@ const Login = () => {
 
     dispatch(loginHandler(userCredentials, sendRequest, isLogin, navigate));
   };
-
-  useEffect(() => {
-    const signOut = () => {
-      dispatch(logoutHandler());
-    };
-
-    if (tokenData) {
-      setTimeout(signOut, tokenData.duration);
-    } else {
-      signOut();
-    }
-  }, [tokenData, dispatch]);
 
   return (
     <>

@@ -25,13 +25,13 @@ import styles from "./components/Ilustrations/Ilustration.module.css";
 import AdminPanel from "./pages/AdminPanel";
 import { usersActions } from "../src/store/users-slice";
 import Modal from "./components/UI/Modal";
-import { logoutHandler } from "./store/auth-slice";
+import { logoutHandler, retrieveStoredToken } from "./store/auth-slice";
 import socket from "./socket";
 
 let initialRender = true;
 
 const App = () => {
-  const token = localStorage.getItem("token");
+  const tokenData = retrieveStoredToken();
   const { isLoading, sendRequest } = useHttp();
   const dispatch = useDispatch();
   const location = useLocation();
@@ -72,14 +72,26 @@ const App = () => {
         {
           url: `${process.env.REACT_APP_RESTAPI_ORIGIN}/tasks`,
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${tokenData?.token}`,
             "Content-Type": "application/json",
           },
         },
         fetchTasksHandler
       );
     }
-  }, [sendRequest, dispatch, isModifiedTask, token, path]);
+  }, [sendRequest, dispatch, isModifiedTask, tokenData?.token, path]);
+
+  useEffect(() => {
+    const signOut = () => {
+      dispatch(logoutHandler());
+    };
+
+    if (tokenData) {
+      setTimeout(signOut, tokenData?.duration);
+    } else {
+      signOut();
+    }
+  }, [tokenData, dispatch]);
 
   return (
     <>
